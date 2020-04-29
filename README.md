@@ -1,6 +1,6 @@
 # GraphQL endpoint of Kubernetes API; dynamically created by GraphQL Mesh
 
-Simple setup for GraphQL Mesh to convert Kubernetes API server into GraphQL Mesh.
+Simple setup for converting Kubernetes API server into GraphQL API.
 
 This sample exposes GraphQL endpoint by using only API management tool [GraphQL Mesh](https://github.com/Urigo/graphql-mesh).
 
@@ -11,10 +11,10 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
 kind create cluster --name kube-graphql
 
 # Run containers on Kubernetes. 
-kubectl apply -f k8s
+kubectl apply -f k8s -n default
 
 # Forward GraphQL Mesh to local machine
-kubectl port-forward svc/mesh-svc 4000:4000
+kubectl port-forward svc/mesh-svc 4000:4000 -n default
 ```
 
 Access `http://localhost:4000`.
@@ -72,6 +72,7 @@ kubectl create cm meshrc-cm --from-file src/.meshrc.yaml --from-file src/mesh-in
 - [GraphQL Mesh](https://github.com/Urigo/graphql-mesh)
 - [GraphQL Mesh OpenAPI sample](https://github.com/Urigo/graphql-mesh/tree/master/examples/openapi-javascript-wiki)
 - [Kubernetes OpenAPI specification](https://github.com/kubernetes/kubernetes/tree/master/api/openapi-spec)
+- [GraphQL Mesh Docker](https://github.com/onelittlenightmusic/graphql-mesh-docker)
 
 ## Similar projects 
 
