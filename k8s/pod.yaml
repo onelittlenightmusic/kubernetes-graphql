@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: mesh
+  name: mesh
+spec:
+  containers:
+  - # image: hiroyukiosaki/graphql-mesh:v0.1.9
+    image: hiroyukiosaki/graphql-mesh:v0.1.10
+    name: mesh
+    resources: {}
+    command:
+    - /bin/bash
+    - -c
+    - sh ./mesh-init.sh && yarn install && yarn start
+    ports:
+    - containerPort: 4000
+    volumeMounts:
+    - mountPath: /work/.meshrc.yaml
+      name: meshrc-cm
+      subPath: .meshrc.yaml
+    - mountPath: /work/mesh-init.sh
+      name: meshrc-cm
+      subPath: mesh-init.sh
+    - mountPath: /work/example-query.graphql
+      name: meshrc-cm
+      subPath: example-query.graphql
+  - image: bitnami/kubectl:latest
+    name: proxy
+    ports:
+    - containerPort: 8001
+    command:
+    - /bin/bash
+    - -c
+    - kubectl proxy --address 0.0.0.0 --accept-hosts='.*'
+  volumes:
+  - name: meshrc-cm
+    configMap:
+      name: meshrc-cm
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}

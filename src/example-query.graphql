@@ -1,0 +1,18 @@
+query q1 {
+  listCoreV1Node {
+    items {
+      metadata {
+        name
+      }
+    }
+  }
+}
+query q2 {
+  listCoreV1NamespacedPod(namespace: "default") {
+    items {
+      metadata {
+        name
+      }
+    }
+  }
+}

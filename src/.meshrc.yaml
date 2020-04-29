@@ -1,0 +1,6 @@
+sources:
+  - name: Wiki
+    handler:
+      openapi:
+        source: /work/swagger.json
+          

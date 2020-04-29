@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mesh-svc
+spec:
+  selector:
+    run: mesh
+  ports:
+    - protocol: TCP
+      port: 4000
+      targetPort: 4000
+      name: mesh
+    - protocol: TCP
+      port: 8001
+      targetPort: 8001
+      name: proxy

@@ -1,0 +1,40 @@
+apiVersion: v1
+data:
+  .meshrc.yaml: "sources:\n  - name: Wiki\n    handler:\n      openapi:\n        source:
+    /work/swagger.json\n          "
+  example-query.graphql: |-
+    query q1 {
+      listCoreV1Node {
+        items {
+          metadata {
+            name
+          }
+        }
+      }
+    }
+    query q2 {
+      listCoreV1NamespacedPod(namespace: "default") {
+        items {
+          metadata {
+            name
+          }
+        }
+      }
+    }
+  mesh-init.sh: |-
+    #!/bin/bash
+    curl -LO https://raw.githubusercontent.com/kubernetes/kubernetes/master/api/openapi-spec/swagger.json
+    sed -i -e '$d' swagger.json
+    sed -i -e '$d' swagger.json
+    cat << EOF >> swagger.json
+      "swagger": "2.0",
+      "servers": [
+        { "url": "http://mesh-svc:8001/"}
+      ]
+    }
+    EOF
+    sed -i -e "s/\(\s\{10,\}\)\"https/\1\"http/g"  swagger.json
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: meshrc-cm
