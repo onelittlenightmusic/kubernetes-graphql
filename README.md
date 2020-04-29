@@ -55,5 +55,5 @@ kubectl create cm meshrc-cm --from-file src/.meshrc.yaml --from-file src/mesh-in
 # Reference
 
 - [GraphQL Mesh](https://github.com/Urigo/graphql-mesh)
-- [GraphQL Mesh MySQL Employee example](https://github.com/Urigo/graphql-mesh/tree/master/examples/mysql-employees)
+- [GraphQL Mesh OpenAPI sample](https://github.com/Urigo/graphql-mesh/tree/master/examples/openapi-javascript-wiki)
 - [Kubernetes OpenAPI specification](https://github.com/kubernetes/kubernetes/tree/master/api/openapi-spec)
