@@ -4,6 +4,76 @@ Simple setup for converting Kubernetes API server into GraphQL API.
 
 This sample exposes GraphQL endpoint by using only API management tool [GraphQL Mesh](https://github.com/Urigo/graphql-mesh).
 
+![](img/kubernetes-graphql.gif)
+
+- [GraphQL endpoint of Kubernetes API; dynamically created by GraphQL Mesh](#graphql-endpoint-of-kubernetes-api-dynamically-created-by-graphql-mesh)
+- [Advantage of GraphQL](#advantage-of-graphql)
+- [Query example](#query-example)
+  - [Example 1. list pods](#example-1-list-pods)
+  - [Example 2: get pods with labels](#example-2-get-pods-with-labels)
+- [Start up](#start-up)
+- [Cleanup](#cleanup)
+- [Architecture](#architecture)
+- [Customize](#customize)
+- [Reference](#reference)
+  - [Similar projects](#similar-projects)
+
+# Advantage of GraphQL
+
+- Unique and readable query format
+  - In GraphQL world, you edit fields in your query so that response data will include only fields that you need.
+- Completion or validation of query
+  - When you edit your query with GraphQL playground or Graphiql, they have powerful completion function which enables you to easily construct query without remembering exact field name etc.
+
+# Query example
+
+  ## Example 1. list pods
+
+
+  ```sh
+  kubectl get pods --namespace default -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.startTime}{"\n"}{end}'
+  ```
+
+  ```graphql
+  {
+    listCoreV1NamespacedPod(namespace: "default") {
+      items {
+        metadata {
+          name
+        }
+        status {
+          startTime
+        }
+      }
+    }
+  }
+  ```
+
+  ## Example 2: get pods with labels
+
+  ```sh
+  kubectl get pods --namespace default -l run=mesh -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.metadata.namespace}{"\t"}{.metadata.labels}{"\t"}{.status.startTime}{"\n"}{end}'
+  ```
+
+  ```graphql
+  {
+  	listCoreV1NamespacedPod(
+      namespace: "default", 
+      labelSelector: "run=mesh"
+    ) {
+      items {
+        metadata {
+          name
+          namespace
+          labels
+        }
+        status {
+          startTime
+        }
+      }
+    }
+  }
+  ```
 # Start up
 
 ```sh
