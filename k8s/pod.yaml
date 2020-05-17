@@ -8,7 +8,7 @@ metadata:
 spec:
   containers:
   - # image: hiroyukiosaki/graphql-mesh:v0.1.9
-    image: hiroyukiosaki/graphql-mesh:v0.1.10
+    image: hiroyukiosaki/graphql-mesh:latest
     name: mesh
     resources: {}
     command:

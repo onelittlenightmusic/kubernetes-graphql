@@ -1,0 +1,21 @@
+graphql-mesh:
+  # You don't need to change this parameters unless you create your own .meshrc.yaml etc.
+  mountConfigMap:
+    .meshrc.yaml: meshrc
+    example-query.graphql: meshrc
+    init.sh:  meshrc
+  # image:
+  #   pullPolicy: Always
+
+  ingress:
+    enabled: true
+    # annotations:
+    #   kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: graphql-mesh-k8s.127.0.0.1.xip.io
+        paths: ["/"]
+kubernetes-api-proxy:
+  serviceAccount:
+    annotations: {}
+    clusterWide: false # if true, APIs for cluster wide resource are allowed.

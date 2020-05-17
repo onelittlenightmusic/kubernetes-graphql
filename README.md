@@ -11,7 +11,11 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
 - [Query example](#query-example)
   - [Example 1. list pods](#example-1-list-pods)
   - [Example 2: get pods with labels](#example-2-get-pods-with-labels)
+  - [Example 3. Helper and error case](#example-3-helper-and-error-case)
 - [Start up](#start-up)
+  - [Prerequisites](#prerequisites)
+  - [Case 1: with Kubernetes](#case-1-with-kubernetes)
+  - [Case 2 : with Helm](#case-2--with-helm)
 - [Cleanup](#cleanup)
 - [Architecture](#architecture)
 - [Customize](#customize)
@@ -49,6 +53,10 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
   }
   ```
 
+  Example: Pod listing
+
+  ![](img/screen.png)
+
   ## Example 2: get pods with labels
 
   ```sh
@@ -74,12 +82,32 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
     }
   }
   ```
+
+  ## Example 3. Helper and error case
+
+Example: document generated according to OpenAPI
+
+![](img/readablemessage.png)
+
+Error case
+
+![](img/error.png)
+
 # Start up
+
+## Prerequisites
+
+You have your own Kubernetes cluster or create one. For example, you can create it with the following command after installing [kind](https://kind.sigs.k8s.io/docs/user/quick-start/).
 
 ```sh
 # Create a Kubernetes cluster on Docker
-kind create cluster --name kube-graphql
+kind create cluster --name kube-graphql --config kind-config.yaml
+```
 
+## Case 1: with Kubernetes
+
+
+```sh
 # Run containers on Kubernetes. 
 kubectl apply -f k8s -n default
 
@@ -89,17 +117,27 @@ kubectl port-forward svc/mesh-svc 4000:4000 -n default
 
 Access `http://localhost:4000`.
 
-Example: Pod listing
+## Case 2 : with Helm
 
-![](img/screen.png)
+After installing helm command, you can deploy [helm chart](https://onelittlenightmusic.github.io/graphql-mesh-docker/helm-chart).
 
-Example: document generated according to OpenAPI
+```sh
+helm repo add kubernetes-graphql https://onelittlenightmusic.github.io/graphql-mesh-docker/helm-chart
+helm install my-kubernetes-graphql kubernetes-graphql/kubernetes-graphql
+# or 
+helm install my-kubernetes-graphql kubernetes-graphql/kubernetes-graphql --set kubernetes-api-proxy.serviceAccount.clusterWide=true
+```
 
-![](img/readablemessage.png)
+Access a URL which is displayed after running `helm install` (e.g. `http://graphql-mesh-k8s.127.0.0.1.xip.io`).
 
-Error case
+Helm chart parameters are as follows,
 
-![](img/error.png)
+  | Name | Description | Default |
+  |-|-|-|
+  | `kubernetes-api-proxy.serviceAccount.create` | If `true`, ServiceAccount will be created for GraphQL API | `true` |
+  | `kubernetes-api-proxy.serviceAccount.clusterWide` | If `true`, GraphQL API endpoint will be allowed to call cluster wide API like `kubectl get nodes` | `false` |
+  | `graphql-mesh.ingress.enabled` | If `true`,  | `false` |
+
 
 # Cleanup
 

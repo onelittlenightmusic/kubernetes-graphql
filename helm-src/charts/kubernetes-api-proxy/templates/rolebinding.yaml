@@ -1,0 +1,20 @@
+{{- if .Values.serviceAccount.create -}}
+{{- $kind := "RoleBinding" -}}
+{{- $roleName := "admin" -}}
+{{- if .Values.serviceAccount.clusterWide -}}
+{{ $kind = "ClusterRoleBinding" }}
+{{ $roleName = "cluster-admin" }}
+{{- end -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: {{ $kind }}
+metadata:
+  name: {{ include "kubernetes-api-proxy.serviceAccountName" . }}-{{ $roleName }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "kubernetes-api-proxy.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ $roleName }}
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

@@ -1,0 +1,50 @@
+mount:
+  .meshrc.yaml: |-
+    sources:
+      - name: graphql-mesh-k8s
+        handler:
+          openapi:
+            source: /work/swagger.json
+            baseUrl: http://mesh-svc:8001/
+            skipSchemaValidation: false
+  example-query.graphql: |-
+    query q1 {
+      listCoreV1Node {
+        items {
+          metadata {
+            name
+          }
+        }
+      }
+    }
+    query q2 {
+      listCoreV1NamespacedPod(namespace: "default") {
+        items {
+          metadata {
+            name
+          }
+        }
+      }
+    }
+  init.sh: |-
+    #!/bin/bash
+    curl -LO https://raw.githubusercontent.com/kubernetes/kubernetes/master/api/openapi-spec/swagger.json
+    # sed -i -e '$d' swagger.json
+    # sed -i -e '$d' swagger.json
+    # cat << EOF >> swagger.json
+    #   "swagger": "2.0",
+    #   "servers": [
+    #     { "url": "http://mesh-svc:8001/"}
+    #   ]
+    # }
+    # EOF
+    sed -i -e "s/\(\s\{10,\}\)\"https/\1\"http/g"  swagger.json
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: graphql-mesh-k8s.127.0.0.1.xip.io
+      paths: ["/"]

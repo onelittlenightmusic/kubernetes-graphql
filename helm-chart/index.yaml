@@ -1,0 +1,34 @@
+apiVersion: v1
+entries:
+  kubernetes-graphql:
+  - apiVersion: v2
+    appVersion: 0.1.15
+    created: "2020-05-17T16:17:36.015498-07:00"
+    dependencies:
+    - enabled: true
+      name: graphql-mesh
+      repository: https://onelittlenightmusic.github.io/graphql-mesh-docker/helm-chart
+      tags:
+      - mesh
+      version: 0.1.0
+    - enabled: true
+      name: kubernetes-api-proxy
+      repository: ""
+      version: 0.1.0
+    description: A chart for GraphQL API server of Kubernetes
+    digest: 8e8a4cb02102ccfc77d125313e023e3b60d77abb4a9d7ad8c72333ab6c9515e7
+    home: https://onelittlenightmusic.github.io/kubernetes-graphql/helm-chart
+    keywords:
+    - graphql
+    - mesh
+    maintainers:
+    - name: Hiro OSAKI
+      url: https://github.com/onelittlenightmusic
+    name: kubernetes-graphql
+    sources:
+    - https://github.com/onelittlenightmusic/kubernetes-graphql
+    type: application
+    urls:
+    - https://onelittlenightmusic.github.io/graphql-mesh-docker/helm-chart/kubernetes-graphql-0.1.0.tgz
+    version: 0.1.0
+generated: "2020-05-17T16:17:36.01414-07:00"

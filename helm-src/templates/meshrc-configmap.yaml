@@ -1,0 +1,30 @@
+{{- $subchart := "kubernetes-api-proxy" -}}
+{{- $newContext := (dict "Chart" (dict "Name" $subchart) "Values" (index .Values $subchart) "Release" .Release "Capabilities" .Capabilities)}}
+apiVersion: v1
+data:
+  .meshrc.yaml: |-
+    sources:
+      - name: graphql-mesh-k8s
+        handler:
+          openapi:
+            source: /work/swagger.json
+            baseUrl: http://{{- include "kubernetes-api-proxy.fullname" $newContext -}}:8001/
+            skipSchemaValidation: true
+  example-query.graphql: |-
+    query q {
+      listCoreV1NamespacedPod(namespace: "default") {
+        items {
+          metadata {
+            name
+          }
+        }
+      }
+    }
+  init.sh: |-
+    #!/bin/bash
+    curl -LO https://raw.githubusercontent.com/kubernetes/kubernetes/master/api/openapi-spec/swagger.json
+    sed -i -e "s/\(\s\{10,\}\)\"https/\1\"http/g"  swagger.json
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: meshrc
