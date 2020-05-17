@@ -122,9 +122,9 @@ Access `http://localhost:4000`.
 After installing helm command, you can deploy [helm chart](https://onelittlenightmusic.github.io/graphql-mesh-docker/helm-chart).
 
 ```sh
-helm repo add kubernetes-graphql https://onelittlenightmusic.github.io/graphql-mesh-docker/helm-chart
+helm repo add kubernetes-graphql https://onelittlenightmusic.github.io/kubernetes-graphql/helm-chart
 helm install my-kubernetes-graphql kubernetes-graphql/kubernetes-graphql
-# or 
+# or with parameter
 helm install my-kubernetes-graphql kubernetes-graphql/kubernetes-graphql --set kubernetes-api-proxy.serviceAccount.clusterWide=true
 ```
 
