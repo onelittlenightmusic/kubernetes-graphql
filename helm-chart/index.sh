@@ -1,2 +1,2 @@
 #!/bin/bash
-helm repo index --url https://onelittlenightmusic.github.io/graphql-mesh-docker/helm-chart .
+helm repo index --url https://onelittlenightmusic.github.io/kubernetes-graphql/helm-chart .
