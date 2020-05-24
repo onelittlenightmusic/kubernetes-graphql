@@ -136,7 +136,7 @@ Helm chart parameters are as follows,
   |-|-|-|
   | `kubernetes-api-proxy.serviceAccount.create` | If `true`, ServiceAccount will be created for GraphQL API | `true` |
   | `kubernetes-api-proxy.serviceAccount.clusterWide` | If `true`, GraphQL API endpoint will be allowed to call cluster wide API like `kubectl get nodes` | `false` |
-  | `graphql-mesh.ingress.enabled` | If `true`,  | `false` |
+  | `graphql-mesh.ingress.enabled` | If `true`, an Ingress will be created. In this case, you prepare Ingress Controller. | `true` |
 
 
 # Cleanup

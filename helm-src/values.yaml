@@ -4,6 +4,8 @@ graphql-mesh:
     .meshrc.yaml: meshrc
     example-query.graphql: meshrc
     init.sh:  meshrc
+    # childResolveReference.js: meshrc
+    additional-resolvers.js: meshrc
   # image:
   #   pullPolicy: Always
 
