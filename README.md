@@ -11,7 +11,8 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
 - [Query example](#query-example)
   - [Example 1. list pods](#example-1-list-pods)
   - [Example 2: get pods with labels](#example-2-get-pods-with-labels)
-  - [Example 3. Helper and error case](#example-3-helper-and-error-case)
+  - [Example 3. `parent`/`children` and `connected`/`connecting`](#example-3-parentchildren-and-connectedconnecting)
+  - [Example 4. Helper and error case](#example-4-helper-and-error-case)
 - [Start up](#start-up)
   - [Prerequisites](#prerequisites)
   - [Case 1: with Kubernetes](#case-1-with-kubernetes)
@@ -83,15 +84,61 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
   }
   ```
 
-  ## Example 3. Helper and error case
+  ## Example 3. `parent`/`children` and `connected`/`connecting`
 
-Example: document generated according to OpenAPI
+  These are original fields.
 
-![](img/readablemessage.png)
+  ```graphql
+  query q {
+    listCoreV1NamespacedPod(namespace: "default") {
+      items {
+        # All pods in default namespace
+        metadata {
+          name
+          namespace
+          ownerReferences {
+            name
+          }
+          labels
+        }
+        parent { # ReplicaSet
+          parent { # Deployment
+            metadata {
+              name
+            }
+          }
+          children { # Pods
+            metadata {
+              name
+            }
+          }
+        }
+        connected { # Services
+          metadata {
+            name
+          }
+        }
+      }
+    }
+  }
+  ```
 
-Error case
+  | Name | Value | Example |
+  |-|-|-|
+  | `parent` | Follow a owner link which means dependency in Kubernetes  | `Pod.parent` -> `ReplicaSet`, `ReplicaSet.parent` -> `Deployment` |
+  | `children` | Drill down owner links downward. Search for all child resource elements which has owner link to original resource. | `Deployment.children` -> `[ReplicaSet]`, `ReplicaSet.children` -> `[Pod]`|
+  | `connecting` | Search for all resource elements which have the same labels as `la belSelector` of original resource.  | `Service.connecting` -> `[Pod]` |
+  | `connected` | Search for resources whose `labelSelector` includes all labels of original resource | `Pod.conntected` -> `Service` |
 
-![](img/error.png)
+  ## Example 4. Helper and error case
+
+  Example: document generated according to OpenAPI
+
+  ![](img/readablemessage.png)
+
+  Error case
+
+  ![](img/error.png)
 
 # Start up
 
