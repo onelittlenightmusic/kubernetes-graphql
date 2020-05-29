@@ -78,8 +78,7 @@ data:
     
   init.sh: |-
     #!/bin/bash
-    curl -LO https://raw.githubusercontent.com/kubernetes/kubernetes/master/api/openapi-spec/swagger.json
-    sed -i -e "s/\(\s\{10,\}\)\"https/\1\"http/g"  swagger.json
+    curl -L http://{{- include "kubernetes-api-proxy.fullname" $newContext -}}:8001/openapi/v2 -o swagger.json
   additional-resolvers.js: |-
     const createParentResolver = (readfn) => {
       return async (obj, args, { graphqlMeshK8s }) => {
