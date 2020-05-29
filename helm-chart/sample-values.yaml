@@ -1,0 +1,10 @@
+graphql-mesh:
+  ingress:
+    enabled: true
+    hosts:
+      - host: graphql-mesh-k8s.127.0.0.1.xip.io
+        paths: ["/"]
+kubernetes-api-proxy:
+  serviceAccount:
+    annotations: {}
+    clusterWide: true # if true, APIs for cluster wide resource are allowed.
