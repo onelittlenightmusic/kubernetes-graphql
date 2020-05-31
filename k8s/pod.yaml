@@ -8,25 +8,28 @@ metadata:
 spec:
   containers:
   - # image: hiroyukiosaki/graphql-mesh:v0.1.9
-    image: hiroyukiosaki/graphql-mesh:latest
+    image: hiroyukiosaki/graphql-mesh:latest-all
     name: mesh
     resources: {}
     command:
     - /bin/bash
     - -c
-    - sh ./mesh-init.sh && yarn install && yarn start
+    - sh ./init.sh && yarn install && yarn start
     ports:
     - containerPort: 4000
     volumeMounts:
     - mountPath: /work/.meshrc.yaml
       name: meshrc-cm
       subPath: .meshrc.yaml
-    - mountPath: /work/mesh-init.sh
+    - mountPath: /work/init.sh
       name: meshrc-cm
-      subPath: mesh-init.sh
+      subPath: init.sh
     - mountPath: /work/example-query.graphql
       name: meshrc-cm
       subPath: example-query.graphql
+    - mountPath: /work/additional-resolvers.js
+      name: meshrc-cm
+      subPath: additional-resolvers.js
   - image: bitnami/kubectl:latest
     name: proxy
     ports:

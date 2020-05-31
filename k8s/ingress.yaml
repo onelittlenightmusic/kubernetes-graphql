@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  generation: 1
+  name: my-kubernetes-graphql
+spec:
+  rules:
+  - host: graphql-mesh-k8s.127.0.0.1.xip.io
+    http:
+      paths:
+      - backend:
+          serviceName: mesh-svc
+          servicePort: 4000
+        path: /

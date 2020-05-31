@@ -85,7 +85,7 @@ data:
         console.log("createParentResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var ownerReferences = obj.metadata && obj.metadata.ownerReferences;
-        if((!ownerReferences.length) || (!namespace)) {
+        if((!ownerReferences) ||(!ownerReferences.length) || (!namespace)) {
           return null;
         }
         var name = ownerReferences[0].name;

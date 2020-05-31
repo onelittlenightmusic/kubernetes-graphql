@@ -1,45 +1,172 @@
 apiVersion: v1
 data:
   .meshrc.yaml: |-
+    # merger: federation
     sources:
-    - name: Wiki
-      handler:
-        openapi:
-          source: /work/swagger.json
-          baseUrl: http://mesh-svc:8001/
-          skipSchemaValidation: true
+      - name: graphqlMeshK8s
+        handler:
+          openapi:
+            source: /work/swagger.json
+            baseUrl: http://mesh-svc:8001/
+            skipSchemaValidation: true
+        # transforms:
+        # - federation: 
+        #     types:
+        #     - name: Query
+        #       config:
+        #         extend: true
+        #     - name: IoK8sCoreV1Pod
+        #       config:
+        #         extend: true
+        #         keyFields:
+        #             - metadata.name
+        #         resolveReference: ./childResolveReference.js
+        transforms:
+          - extend: |
+              extend type IoK8sApiCoreV1Pod {
+                parent: IoK8sApiAppsV1ReplicaSet
+                connected: [IoK8sApiCoreV1Service]
+              }
+              extend type IoK8sApiAppsV1ReplicaSet {
+                parent: IoK8sApiAppsV1Deployment
+                children: [IoK8sApiCoreV1Pod]
+              }
+              extend type IoK8sApiAppsV1Deployment {
+                children: [IoK8sApiAppsV1ReplicaSet]
+              }
+              extend type IoK8sApiCoreV1Service {
+                connecting: [IoK8sApiCoreV1Pod]
+              }
+    additionalResolvers:
+      - ./additional-resolvers.js
+        
   example-query.graphql: |-
-    query q1 {
-      listCoreV1Node {
-        items {
-          metadata {
-            name
-          }
-        }
-      }
-    }
-    query q2 {
+    query q {
       listCoreV1NamespacedPod(namespace: "default") {
         items {
           metadata {
             name
+            namespace
+            ownerReferences {
+              name
+            }
+            labels
+          }
+          parent {
+            parent {
+              metadata {
+                name
+              }
+            }
+            children {
+              metadata {
+                name
+              }
+            }
+          }
+          connected {
+            metadata {
+              name
+            }
           }
         }
       }
     }
-  mesh-init.sh: |-
+    
+  init.sh: |-
     #!/bin/bash
-    curl -LO https://raw.githubusercontent.com/kubernetes/kubernetes/master/api/openapi-spec/swagger.json
-    # sed -i -e '$d' swagger.json
-    # sed -i -e '$d' swagger.json
-    # cat << EOF >> swagger.json
-    #   "swagger": "2.0",
-    #   "servers": [
-    #     { "url": "http://mesh-svc:8001/"}
-    #   ]
-    # }
-    # EOF
-    sed -i -e "s/\(\s\{10,\}\)\"https/\1\"http/g"  swagger.json
+    curl -L http://mesh-svc:8001/openapi/v2 -o swagger.json
+  additional-resolvers.js: |-
+    const createParentResolver = (readfn) => {
+      return async (obj, args, { graphqlMeshK8s }) => {
+        console.log("createParentResolver");
+        var namespace = obj.metadata && obj.metadata.namespace;
+        var ownerReferences = obj.metadata && obj.metadata.ownerReferences;
+        if((!ownerReferences) ||(!ownerReferences.length) || (!namespace)) {
+          return null;
+        }
+        var name = ownerReferences[0].name;
+        var _function = graphqlMeshK8s.api[readfn]
+        return _function({ name, namespace })
+      }
+    }
+    const createChildrenResolver = (listfn) => {
+      return async (obj, args, {graphqlMeshK8s}) => {
+        console.log("createChildrenResolver");
+        var namespace = obj.metadata && obj.metadata.namespace;
+        var name = obj.metadata && obj.metadata.name;
+        if((!name) || (!namespace)) {
+          return null;
+        }
+        var _function = graphqlMeshK8s.api[listfn];
+        var list = await _function({ namespace });
+        return list.items.filter(elem => {
+          var ownerReferences = elem.metadata && elem.metadata.ownerReferences;
+          if(!ownerReferences.length) {
+            return false;
+          }
+          return name == ownerReferences[0].name;
+        });
+      }
+    }
+    const createConnectingResolver = (listfn) => {
+      return async (obj, args, { graphqlMeshK8s }) => {
+        console.log("createConnectingResolver");
+        var namespace = obj.metadata && obj.metadata.namespace;
+        var selector = obj.spec && obj.spec.selector;
+        if((!selector) || (!namespace)) {
+          return [];
+        }
+        var _function = graphqlMeshK8s.api[listfn];
+        var list = await _function({ namespace });
+        //console.log("selector", selector);
+        return list.items.filter(elem => {
+          var labels = elem.metadata.labels;
+          return Object.keys(selector).reduce((result, key) => {
+            return result && (selector[key] == labels[key])
+          }, true)
+        })
+      }
+    }
+    const createConnectedResolver = (listfn) => {
+      return async (obj, args, { graphqlMeshK8s }) => {
+        console.log("createConnectedResolver");
+        var namespace = obj.metadata && obj.metadata.namespace;
+        var labels = obj.metadata && obj.metadata.labels;
+        if((!labels) || (!namespace)) {
+          return [];
+        }
+        var _function = graphqlMeshK8s.api[listfn];
+        var list = await _function({ namespace });
+        return list.items.filter(elem => {
+          var selector = elem.spec && elem.spec.selector;
+          //console.log("selector", selector);
+          if(!selector) {
+            return false;
+          }
+          return Object.keys(selector).reduce((result, key) => {
+            return result && (selector[key] == labels[key])
+          }, true)
+        })
+      }
+    }
+    const resolvers = {
+      IoK8sApiCoreV1Pod: {
+        parent: createParentResolver("readAppsV1NamespacedReplicaSet"),
+        connected: createConnectedResolver("listCoreV1NamespacedService")
+      },
+      IoK8sApiAppsV1ReplicaSet: {
+        parent: createParentResolver("readAppsV1NamespacedDeployment"),
+        children: createChildrenResolver("listCoreV1NamespacedPod")
+      },
+      IoK8sApiAppsV1Deployment: {
+        children: createChildrenResolver("listAppsV1NamespacedReplicaSet")
+      },
+      IoK8sApiCoreV1Service: {
+        connecting: createConnectingResolver("listCoreV1NamespacedPod")
+      }
+    };
+    module.exports = { resolvers };
 kind: ConfigMap
 metadata:
   creationTimestamp: null
