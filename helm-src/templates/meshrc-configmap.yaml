@@ -80,7 +80,7 @@ data:
     curl -L http://{{- include "kubernetes-api-proxy.fullname" $newContext -}}:8001/openapi/v2 -o swagger.json
   additional-resolvers.js: |-
     const createParentResolver = (readfn) => {
-      return async (obj, args, { graphqlMeshK8s }) => {
+      var resolve = async (obj, args, { graphqlMeshK8s }) => {
         console.log("createParentResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var ownerReferences = obj.metadata && obj.metadata.ownerReferences;
@@ -90,10 +90,11 @@ data:
         var name = ownerReferences[0].name;
         var _function = graphqlMeshK8s.api[readfn]
         return _function({ name, namespace })
-      }
+      };
+      return { resolve };
     }
     const createChildrenResolver = (listfn) => {
-      return async (obj, args, {graphqlMeshK8s}) => {
+      var resolve = async (obj, args, {graphqlMeshK8s}) => {
         console.log("createChildrenResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var name = obj.metadata && obj.metadata.name;
@@ -109,10 +110,11 @@ data:
           }
           return name == ownerReferences[0].name;
         });
-      }
+      };
+      return { resolve };
     }
     const createConnectingResolver = (listfn) => {
-      return async (obj, args, { graphqlMeshK8s }) => {
+      var resolve = async (obj, args, { graphqlMeshK8s }) => {
         console.log("createConnectingResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var selector = obj.spec && obj.spec.selector;
@@ -129,9 +131,10 @@ data:
           }, true)
         })
       }
+      return { resolve };
     }
     const createConnectedResolver = (listfn) => {
-      return async (obj, args, { graphqlMeshK8s }) => {
+      var resolve = async (obj, args, { graphqlMeshK8s }) => {
         console.log("createConnectedResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var labels = obj.metadata && obj.metadata.labels;
@@ -151,6 +154,7 @@ data:
           }, true)
         })
       }
+      return { resolve };
     }
     const resolvers = {
       IoK8sApiCoreV1Pod: {

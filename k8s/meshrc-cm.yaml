@@ -77,20 +77,24 @@ data:
     curl -L http://mesh-svc:8001/openapi/v2 -o swagger.json
   additional-resolvers.js: |-
     const createParentResolver = (readfn) => {
-      return async (obj, args, { graphqlMeshK8s }) => {
+      var resolve = async (obj, args, { graphqlMeshK8s }) => {
         console.log("createParentResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var ownerReferences = obj.metadata && obj.metadata.ownerReferences;
+        console.log("ownerReferences", ownerReferences);
         if((!ownerReferences) ||(!ownerReferences.length) || (!namespace)) {
           return null;
         }
         var name = ownerReferences[0].name;
-        var _function = graphqlMeshK8s.api[readfn]
-        return _function({ name, namespace })
-      }
+        var _function = graphqlMeshK8s.api[readfn];
+        var values = await _function({ name, namespace });
+        console.log("values", values, "api", graphqlMeshK8s);
+        return values;
+      };
+      return { resolve };
     }
     const createChildrenResolver = (listfn) => {
-      return async (obj, args, {graphqlMeshK8s}) => {
+      var resolve = async (obj, args, {graphqlMeshK8s}) => {
         console.log("createChildrenResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var name = obj.metadata && obj.metadata.name;
@@ -101,15 +105,16 @@ data:
         var list = await _function({ namespace });
         return list.items.filter(elem => {
           var ownerReferences = elem.metadata && elem.metadata.ownerReferences;
-          if(!ownerReferences.length) {
+          if((!ownerReferences) || (!ownerReferences.length)) {
             return false;
           }
           return name == ownerReferences[0].name;
         });
-      }
+      };
+      return { resolve };
     }
     const createConnectingResolver = (listfn) => {
-      return async (obj, args, { graphqlMeshK8s }) => {
+      var resolve = async (obj, args, { graphqlMeshK8s }) => {
         console.log("createConnectingResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var selector = obj.spec && obj.spec.selector;
@@ -126,9 +131,10 @@ data:
           }, true)
         })
       }
+      return { resolve };
     }
     const createConnectedResolver = (listfn) => {
-      return async (obj, args, { graphqlMeshK8s }) => {
+      var resolve = async (obj, args, { graphqlMeshK8s }) => {
         console.log("createConnectedResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var labels = obj.metadata && obj.metadata.labels;
@@ -148,6 +154,7 @@ data:
           }, true)
         })
       }
+      return { resolve };
     }
     const resolvers = {
       IoK8sApiCoreV1Pod: {
