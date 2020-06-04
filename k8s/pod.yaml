@@ -5,6 +5,7 @@ metadata:
   labels:
     run: mesh
   name: mesh
+  namespace: default
 spec:
   containers:
   - # image: hiroyukiosaki/graphql-mesh:v0.1.9

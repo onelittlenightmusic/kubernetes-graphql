@@ -3,6 +3,7 @@ kind: Ingress
 metadata:
   generation: 1
   name: my-kubernetes-graphql
+  namespace: default
 spec:
   rules:
   - host: graphql-mesh-k8s.127.0.0.1.xip.io

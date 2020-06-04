@@ -105,7 +105,7 @@ data:
         var list = await _function({ namespace });
         return list.items.filter(elem => {
           var ownerReferences = elem.metadata && elem.metadata.ownerReferences;
-          if(!ownerReferences.length) {
+          if((!ownerReferences) || (!ownerReferences.length)) {
             return false;
           }
           return name == ownerReferences[0].name;

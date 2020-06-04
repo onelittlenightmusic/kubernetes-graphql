@@ -171,3 +171,4 @@ kind: ConfigMap
 metadata:
   creationTimestamp: null
   name: meshrc-cm
+  namespace: default

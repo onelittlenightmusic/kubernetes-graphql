@@ -153,11 +153,18 @@ kind create cluster --name kube-graphql --config kind-config.yaml
 
 ## Case 1: with Kubernetes
 
-
 ```sh
 # Run containers on Kubernetes. 
 kubectl apply -f k8s -n default
+# When you need cluster wide resouce access (e.g. Namespace), you can run this command additionally.
+kubectl apply -f k8s/cluster-wide/
+```
 
+If you have ingress controller in your cluster, you will see the service at `http://graphql-mesh-k8s.127.0.0.1.xip.io`.
+
+Otherwise, this command allows you to forwarding port to localhost.
+
+```
 # Forward GraphQL Mesh to local machine
 kubectl port-forward svc/mesh-svc 4000:4000 -n default
 ```
