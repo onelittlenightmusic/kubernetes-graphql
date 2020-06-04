@@ -6,9 +6,9 @@ graphql-mesh:
     init.sh:  meshrc
     # childResolveReference.js: meshrc
     additional-resolvers.js: meshrc
-  # image:
+  image:
   #   pullPolicy: Always
-
+    tag: "v0.1.17-all"
   ingress:
     enabled: true
     # annotations:
