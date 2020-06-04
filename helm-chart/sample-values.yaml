@@ -4,6 +4,8 @@ graphql-mesh:
     hosts:
       - host: graphql-mesh-k8s.127.0.0.1.xip.io
         paths: ["/"]
+  image:
+    pullPolicy: Always
 kubernetes-api-proxy:
   serviceAccount:
     annotations: {}
