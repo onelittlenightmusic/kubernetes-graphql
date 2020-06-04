@@ -21,22 +21,21 @@ data:
         #         keyFields:
         #             - metadata.name
         #         resolveReference: ./childResolveReference.js
-        transforms:
-          - extend: |
-              extend type IoK8sApiCoreV1Pod {
-                parent: IoK8sApiAppsV1ReplicaSet
-                connected: [IoK8sApiCoreV1Service]
-              }
-              extend type IoK8sApiAppsV1ReplicaSet {
-                parent: IoK8sApiAppsV1Deployment
-                children: [IoK8sApiCoreV1Pod]
-              }
-              extend type IoK8sApiAppsV1Deployment {
-                children: [IoK8sApiAppsV1ReplicaSet]
-              }
-              extend type IoK8sApiCoreV1Service {
-                connecting: [IoK8sApiCoreV1Pod]
-              }
+    additionalTypeDefs: |
+      extend type IoK8sApiCoreV1Pod {
+        parent: IoK8sApiAppsV1ReplicaSet
+        connected: [IoK8sApiCoreV1Service]
+      }
+      extend type IoK8sApiAppsV1ReplicaSet {
+        parent: IoK8sApiAppsV1Deployment
+        children: [IoK8sApiCoreV1Pod]
+      }
+      extend type IoK8sApiAppsV1Deployment {
+        children: [IoK8sApiAppsV1ReplicaSet]
+      }
+      extend type IoK8sApiCoreV1Service {
+        connecting: [IoK8sApiCoreV1Pod]
+      }
     additionalResolvers:
       - ./additional-resolvers.js
         
