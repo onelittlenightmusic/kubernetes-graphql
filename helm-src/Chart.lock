@@ -2,5 +2,8 @@ dependencies:
 - name: graphql-mesh
   repository: https://onelittlenightmusic.github.io/graphql-mesh-docker/helm-chart
   version: 0.1.0
-digest: sha256:ffbc98e357809df667edc05007174aa70004b09cdc17871b3e10eb5c53125b95
-generated: "2020-05-16T13:00:30.451928-07:00"
+- name: kubernetes-api-proxy
+  repository: ""
+  version: 0.1.0
+digest: sha256:2b7d1798f3c57c656da342a10f65061d4bdf999399056198dbd97fbddd1756cd
+generated: "2020-06-08T20:28:33.505592-07:00"
