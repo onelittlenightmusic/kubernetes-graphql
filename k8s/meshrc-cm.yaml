@@ -21,22 +21,40 @@ data:
         #         keyFields:
         #             - metadata.name
         #         resolveReference: ./childResolveReference.js
-        transforms:
-          - extend: |
-              extend type IoK8sApiCoreV1Pod {
-                parent: IoK8sApiAppsV1ReplicaSet
-                connected: [IoK8sApiCoreV1Service]
-              }
-              extend type IoK8sApiAppsV1ReplicaSet {
-                parent: IoK8sApiAppsV1Deployment
-                children: [IoK8sApiCoreV1Pod]
-              }
-              extend type IoK8sApiAppsV1Deployment {
-                children: [IoK8sApiAppsV1ReplicaSet]
-              }
-              extend type IoK8sApiCoreV1Service {
-                connecting: [IoK8sApiCoreV1Pod]
-              }
+        # transforms:
+        #   - extend: |
+        #       extend type IoK8sApiCoreV1Pod {
+        #         parent: IoK8sApiAppsV1ReplicaSet
+        #         connected: [IoK8sApiCoreV1Service]
+        #       }
+        #       extend type IoK8sApiAppsV1ReplicaSet {
+        #         parent: IoK8sApiAppsV1Deployment
+        #         children: [IoK8sApiCoreV1Pod]
+        #       }
+        #       extend type IoK8sApiAppsV1Deployment {
+        #         children: [IoK8sApiAppsV1ReplicaSet]
+        #       }
+        #       extend type IoK8sApiCoreV1Service {
+        #         connecting: [IoK8sApiCoreV1Pod]
+        #       }
+    additionalTypeDefs: |
+        extend type IoK8sApiCoreV1Pod {
+          parent: IoK8sApiAppsV1ReplicaSet
+          connected: IoK8sApiCoreV1ServiceList
+        }
+        extend type IoK8sApiAppsV1ReplicaSet {
+          parent: IoK8sApiAppsV1Deployment
+          children: IoK8sApiCoreV1PodList
+        }
+        extend type IoK8sApiAppsV1Deployment {
+          children: IoK8sApiAppsV1ReplicaSetList
+        }
+        extend type IoK8sApiCoreV1Service {
+          connecting: IoK8sApiCoreV1PodList
+        }
+        extend type Query {
+          pods(namespace: String!): [IoK8sApiCoreV1Pod]
+        }
     additionalResolvers:
       - ./additional-resolvers.js
         
@@ -46,11 +64,6 @@ data:
         items {
           metadata {
             name
-            namespace
-            ownerReferences {
-              name
-            }
-            labels
           }
           parent {
             parent {
@@ -59,14 +72,32 @@ data:
               }
             }
             children {
-              metadata {
-                name
+              items {
+                metadata {
+                  name
+                  ownerReferences {
+                    name
+                  }
+                }
               }
             }
           }
           connected {
-            metadata {
-              name
+            items {
+              metadata {
+                name
+              }
+              spec {
+                selector
+              }
+              connecting {
+                items {
+                  metadata {
+                    name
+                    labels
+                  }
+                }
+              }
             }
           }
         }
@@ -78,7 +109,7 @@ data:
     curl -L http://mesh-svc:8001/openapi/v2 -o swagger.json
   additional-resolvers.js: |-
     const createParentResolver = (readfn) => {
-      return async (obj, args, { graphqlMeshK8s }) => {
+      var resolve = async (obj, args, {graphqlMeshK8s}) => {
         console.log("createParentResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var ownerReferences = obj.metadata && obj.metadata.ownerReferences;
@@ -86,31 +117,41 @@ data:
           return null;
         }
         var name = ownerReferences[0].name;
-        var _function = graphqlMeshK8s.api[readfn]
-        return _function({ name, namespace })
-      }
+        var _function = graphqlMeshK8s.api[readfn];
+        var values = await _function({ name, namespace });
+        return values;
+      };
+      var selectionSet = `{ metadata { name namespace ownerReferences { name }}}`;
+      return { resolve, selectionSet };
     }
     const createChildrenResolver = (listfn) => {
-      return async (obj, args, {graphqlMeshK8s}) => {
+      var resolve = async (obj, args, {graphqlMeshK8s}) => {
         console.log("createChildrenResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var name = obj.metadata && obj.metadata.name;
         if((!name) || (!namespace)) {
           return null;
         }
+        console.log(name, namespace);
         var _function = graphqlMeshK8s.api[listfn];
-        var list = await _function({ namespace });
-        return list.items.filter(elem => {
+        var list = await _function({ namespace }, { fields: { items: {metadata: { labels: true, ownerReferences: {name: true}}}}});
+        console.log("children base", JSON.stringify(list.items));
+        var returnItems = list.items.filter(elem => {
           var ownerReferences = elem.metadata && elem.metadata.ownerReferences;
-          if(!ownerReferences.length) {
+          if((!ownerReferences) || (!ownerReferences.length)) {
             return false;
           }
           return name == ownerReferences[0].name;
-        });
-      }
+        }); 
+        list.items = returnItems;
+        //console.log(list);
+        return list;
+      };
+      var selectionSet = `{ metadata {name namespace}}`;
+      return { resolve, selectionSet };
     }
     const createConnectingResolver = (listfn) => {
-      return async (obj, args, { graphqlMeshK8s }) => {
+      var resolve = async (obj, args, { graphqlMeshK8s }) => {
         console.log("createConnectingResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var selector = obj.spec && obj.spec.selector;
@@ -118,18 +159,24 @@ data:
           return [];
         }
         var _function = graphqlMeshK8s.api[listfn];
-        var list = await _function({ namespace });
+        //var labelSelector = Object.keys(selector).map(key => key+"="+selector[key]).join(",");
+        var list = await _function({ namespace }, { fields: { items: { metadata: {labels: true}}}});
+        console.log("connecting base", JSON.stringify(list.items));
         //console.log("selector", selector);
-        return list.items.filter(elem => {
+        var returnItems = list.items.filter(elem => {
           var labels = elem.metadata.labels;
           return Object.keys(selector).reduce((result, key) => {
             return result && (selector[key] == labels[key])
           }, true)
-        })
+        });
+        list.items = returnItems;
+        return list;
       }
+      var selectionSet = `{ metadata { name namespace } spec {selector} }`;
+      return { resolve, selectionSet };
     }
     const createConnectedResolver = (listfn) => {
-      return async (obj, args, { graphqlMeshK8s }) => {
+      var resolve = async (obj, args, { graphqlMeshK8s }) => {
         console.log("createConnectedResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var labels = obj.metadata && obj.metadata.labels;
@@ -137,8 +184,9 @@ data:
           return [];
         }
         var _function = graphqlMeshK8s.api[listfn];
-        var list = await _function({ namespace });
-        return list.items.filter(elem => {
+        var list = await _function({ namespace }, { selectionSet: `{ items {spec {selector }}}`, depth: 4});
+        console.log("connected base", JSON.stringify(list.items));
+        var returnItems = list.items.filter(elem => {
           var selector = elem.spec && elem.spec.selector;
           //console.log("selector", selector);
           if(!selector) {
@@ -147,8 +195,12 @@ data:
           return Object.keys(selector).reduce((result, key) => {
             return result && (selector[key] == labels[key])
           }, true)
-        })
+        });
+        list.items = returnItems;
+        return list;
       }
+      var selectionSet = `{ metadata { name namespace labels }}`;
+      return { resolve, selectionSet };
     }
     const resolvers = {
       IoK8sApiCoreV1Pod: {
@@ -164,6 +216,12 @@ data:
       },
       IoK8sApiCoreV1Service: {
         connecting: createConnectingResolver("listCoreV1NamespacedPod")
+      },
+      Query: {
+        pods: async (obj, {namespace}, { graphqlMeshK8s }) => {
+          var { items } = await graphqlMeshK8s.api.listCoreV1NamespacedPod({namespace});
+          return items;
+        }
       }
     };
     module.exports = { resolvers };
