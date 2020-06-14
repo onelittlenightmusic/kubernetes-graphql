@@ -89,38 +89,54 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
   These are original fields.
 
   ```graphql
-  query q {
-    listCoreV1NamespacedPod(namespace: "default") {
-      items {
-        # All pods in default namespace
-        metadata {
-          name
-          namespace
-          ownerReferences {
-            name
-          }
-          labels
-        }
-        parent { # ReplicaSet
-          parent { # Deployment
-            metadata {
-              name
-            }
-          }
-          children { # Pods
-            metadata {
-              name
-            }
-          }
-        }
-        connected { # Services
+    query q {
+      listCoreV1NamespacedPod(namespace: "default") {
+        items {
           metadata {
             name
+            namespace
+            ownerReferences {
+              name
+            }
+            labels
+          }
+          parent { # ReplicaSets (Pod's parent)
+            parent { # Deployments (ReplicaSet's parent)
+              metadata {
+                name
+              }
+            }
+            children { # Pods (ReplicaSet's children)
+              items {
+                metadata {
+                  name
+                  ownerReferences {
+                    name
+                  }
+                }
+              }
+            }
+          }
+          connected { # Services (Pod's connected resources)
+            items {
+              metadata {
+                name
+              }
+              spec {
+                selector
+              }
+              connecting { # Pods (Service's connecting targets)
+                items {
+                  metadata {
+                    name
+                  }
+                }
+              }
+            }
           }
         }
       }
     }
-  }
   ```
 
   | Name | Value | Example |

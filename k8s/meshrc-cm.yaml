@@ -64,11 +64,6 @@ data:
         items {
           metadata {
             name
-            namespace
-            ownerReferences {
-              name
-            }
-            labels
           }
           parent {
             parent {
@@ -94,6 +89,14 @@ data:
               }
               spec {
                 selector
+              }
+              connecting {
+                items {
+                  metadata {
+                    name
+                    labels
+                  }
+                }
               }
             }
           }
@@ -157,7 +160,7 @@ data:
         }
         var _function = graphqlMeshK8s.api[listfn];
         //var labelSelector = Object.keys(selector).map(key => key+"="+selector[key]).join(",");
-        var list = await _function({ namespace });
+        var list = await _function({ namespace }, { fields: { items: { metadata: {labels: true}}}});
         console.log("connecting base", JSON.stringify(list.items));
         //console.log("selector", selector);
         var returnItems = list.items.filter(elem => {
