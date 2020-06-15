@@ -18,6 +18,7 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
   - [Case 1: with Kubernetes](#case-1-with-kubernetes)
   - [Case 2 : with Helm](#case-2--with-helm)
 - [Cleanup](#cleanup)
+- [Query](#query)
 - [Architecture](#architecture)
 - [Customize](#customize)
 - [Reference](#reference)
@@ -34,14 +35,14 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
 
   ## Example 1. list pods
 
-
   ```sh
   kubectl get pods --namespace default -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.startTime}{"\n"}{end}'
   ```
 
   ```graphql
   {
-    listCoreV1NamespacedPod(namespace: "default") {
+    # pods or po
+    pods(namespace: "default") {
       items {
         metadata {
           name
@@ -66,7 +67,8 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
 
   ```graphql
   {
-  	listCoreV1NamespacedPod(
+    # pods or po
+  	pods(
       namespace: "default", 
       labelSelector: "run=mesh"
     ) {
@@ -90,7 +92,7 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
 
   ```graphql
     query q {
-      listCoreV1NamespacedPod(namespace: "default") {
+      pods(namespace: "default") {
         items {
           metadata {
             name
@@ -208,12 +210,59 @@ Helm chart parameters are as follows,
   | `kubernetes-api-proxy.serviceAccount.clusterWide` | If `true`, GraphQL API endpoint will be allowed to call cluster wide API like `kubectl get nodes` | `false` |
   | `graphql-mesh.ingress.enabled` | If `true`, an Ingress will be created. In this case, you prepare Ingress Controller. | `true` |
 
-
 # Cleanup
 
 ```sh
 kubectl delete -f k8s
 ```
+
+# Query
+
+The query methods follow [Kubernetes Resource Type](https://kubernetes.io/docs/reference/kubectl/overview/#resource-types).
+
+| Query | Abbreviations |
+|-|-|
+|          `nodes`|`no`|
+|          `namespaces`|`ns`|
+|          `clusterrolebindings`||
+|          `clusterroles`||
+|          `storageclasses`|`sc`|
+|          `mutatingwebhookconfigurations`||
+|          `validatingwebhookconfigurations`||
+|          `certificatesigningrequests`|`csr`|
+|          `podsecuritypolicies`|`psp`|
+|          `componentstatuses`|`cs`|
+|          `customresourcedefinitions`|`crd`|
+|          `priorityclasses`|`pc`|
+|          `csidrivers`||
+|          `csinodes`||
+|          `volumeattachments`||
+|          `pods(namespace: String!) `|`po`|
+|          `services(namespace: String!)`|`svc`|
+|          `ingresses(namespace: String!)`|`ing`|
+|          `replicasets(namespace: String!)`|`rs`|
+|          `deployments(namespace: String!)`|`deploy`|
+|          `daemonsets(namespace: String!)`|`ds`|
+|          `statefulsets(namespace: String!)`|`sts`|
+|          `replicationcontrollers(namespace: String!)`|`rc`|
+|          `horizontalpodautoscalers(namespace: String!)`|`hpa`|
+|          `cronjobs(namespace: String!)`|`cj`|
+|          `jobs(namespace: String!)`||
+|          `rolebindings(namespace: String!)`||
+|          `roles(namespace: String!)`||
+|          `serviceaccounts(namespace: String!)`|`sa`|
+|          `resourcequotas(namespace: String!)`|`quota`|
+|          `endpoints(namespace: String!)`|`ep`|
+|          `controllerrevisions(namespace: String!)`|`cr`|
+|          `networkpolicies(namespace: String!)`|`netpol`|
+|          `poddisruptionbudgets(namespace: String!)`|`pdb`|
+|          `limitranges(namespace: String!)`|`limits`|
+|          `podtemplates(namespace: String!)`||
+|          `events(namespace: String!)`|`ev`|
+|          `persistentvolumeclaims(namespace: String!)`|`pvc`|
+|          `persistentvolumes(namespace: String!)`|`pv`|
+|          `secrets(namespace: String!)`||
+|          `configmaps(namespace: String!)`|`cm`|
 
 # Architecture
 
