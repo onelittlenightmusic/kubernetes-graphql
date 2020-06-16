@@ -86,7 +86,7 @@ data:
           po(namespace: String!): IoK8sApiCoreV1PodList
           svc(namespace: String!): IoK8sApiCoreV1ServiceList
           rs(namespace: String!): IoK8sApiAppsV1ReplicaSetList
-          deploy(namespace: String!): IoK8sApiAppsV1Deployment
+          deploy(namespace: String!): IoK8sApiAppsV1DeploymentList
           pvc(namespace: String!): IoK8sApiCoreV1PersistentVolumeClaimList
           pv(namespace: String!): IoK8sApiCoreV1PersistentVolumeList
           ing(namespace: String!): IoK8sApiNetworkingV1beta1IngressClassList
@@ -155,15 +155,19 @@ data:
     
   init.sh: |-
     #!/bin/bash
+    yarn add deepmerge graphql-fields
     curl -L http://mesh-svc:8001/openapi/v2 -o swagger.json
   additional-resolvers.js: |-
+    const graphqlFields = require("graphql-fields");
+    const merge = require('deepmerge');
+
     const createParentResolver = (readfn) => {
-      var resolve = async (obj, args, {graphqlMeshK8s}) => {
+      var resolve = async (obj, args, {graphqlMeshK8s}, info) => {
         console.log("createParentResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var ownerReferences = obj.metadata && obj.metadata.ownerReferences;
         if((!ownerReferences) ||(!ownerReferences.length) || (!namespace)) {
-          return null;
+          return { items: [] };
         }
         var name = ownerReferences[0].name;
         var _function = graphqlMeshK8s.api[readfn];
@@ -174,23 +178,26 @@ data:
       return { resolve, selectionSet };
     }
     const createChildrenResolver = (listfn) => {
-      var resolve = async (obj, args, {graphqlMeshK8s}) => {
+      var resolve = async (obj, args, {graphqlMeshK8s}, info) => {
         console.log("createChildrenResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var name = obj.metadata && obj.metadata.name;
         if((!name) || (!namespace)) {
-          return null;
+          return { items: [] };
         }
         console.log(name, namespace);
+        var resolverRequirements = { items: {metadata: { labels: true, ownerReferences: {name: true}}}};
+        var mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
+        //console.log(JSON.stringify(mergedFields));
         var _function = graphqlMeshK8s.api[listfn];
-        var list = await _function({ namespace }, { fields: { items: {metadata: { labels: true, ownerReferences: {name: true}}}}});
+        var list = await _function({ namespace }, mergedFields);
         console.log("children base", JSON.stringify(list.items));
         var returnItems = list.items.filter(elem => {
           var ownerReferences = elem.metadata && elem.metadata.ownerReferences;
           if((!ownerReferences) || (!ownerReferences.length)) {
             return false;
           }
-          return name == ownerReferences[0].name;
+          return name == ownerReferences[0].nameStringNonNull; //TOBE: this must be [0].name
         }); 
         list.items = returnItems;
         //console.log(list);
@@ -200,16 +207,20 @@ data:
       return { resolve, selectionSet };
     }
     const createConnectingResolver = (listfn) => {
-      var resolve = async (obj, args, { graphqlMeshK8s }) => {
+      var resolve = async (obj, args, { graphqlMeshK8s }, info) => {
         console.log("createConnectingResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var selector = obj.spec && obj.spec.selector;
         if((!selector) || (!namespace)) {
-          return [];
+          console.log("createConnectingResolver FAILED: ", "selector", selector, "namespace", namespace);
+          return { items: [] };
         }
         var _function = graphqlMeshK8s.api[listfn];
         //var labelSelector = Object.keys(selector).map(key => key+"="+selector[key]).join(",");
-        var list = await _function({ namespace }, { fields: { items: { metadata: {labels: true}}}});
+        var resolverRequirements = { items: { metadata: {labels: true}}};
+        var mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
+        console.log(JSON.stringify(mergedFields));
+        var list = await _function({ namespace }, mergedFields);
         console.log("connecting base", JSON.stringify(list.items));
         //console.log("selector", selector);
         var returnItems = list.items.filter(elem => {
@@ -225,15 +236,17 @@ data:
       return { resolve, selectionSet };
     }
     const createConnectedResolver = (listfn) => {
-      var resolve = async (obj, args, { graphqlMeshK8s }) => {
+      var resolve = async (obj, args, { graphqlMeshK8s }, info) => {
         console.log("createConnectedResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var labels = obj.metadata && obj.metadata.labels;
         if((!labels) || (!namespace)) {
-          return [];
+          return { items: [] };
         }
         var _function = graphqlMeshK8s.api[listfn];
-        var list = await _function({ namespace }, { selectionSet: `{ items {spec {selector }}}`, depth: 4});
+        var resolverRequirements = { items: {spec: {selector: true }}};
+        var mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
+        var list = await _function({ namespace }, mergedFields);
         console.log("connected base", JSON.stringify(list.items));
         var returnItems = list.items.filter(elem => {
           var selector = elem.spec && elem.spec.selector;
@@ -252,7 +265,7 @@ data:
       return { resolve, selectionSet };
     }
     const createMountingResolver = () => {
-      var resolve = async (obj, args, {graphqlMeshK8s}) => {
+      var resolve = async (obj, args, {graphqlMeshK8s}, info) => {
         console.log("createMountingResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var volumes = obj.spec && obj.spec.volumes;
