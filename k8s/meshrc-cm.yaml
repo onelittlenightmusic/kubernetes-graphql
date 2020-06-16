@@ -10,9 +10,18 @@ data:
             baseUrl: http://mesh-svc:8001/
             skipSchemaValidation: true
     additionalTypeDefs: |
+        interface K8sResourceInterface {
+          kind: String
+          apiVersion: String
+          metadata: IoK8sApimachineryPkgApisMetaV1ObjectMeta
+        }
+        extend type IoK8sApiCoreV1ConfigMap implements K8sResourceInterface
+        extend type IoK8sApiCoreV1PersistentVolumeClaim implements K8sResourceInterface
+        extend type IoK8sApiCoreV1Secret implements K8sResourceInterface
         extend type IoK8sApiCoreV1Pod {
           parent: IoK8sApiAppsV1ReplicaSet
           connected: IoK8sApiCoreV1ServiceList
+          mounting: [K8sResourceInterface]
         }
         extend type IoK8sApiAppsV1ReplicaSet {
           parent: IoK8sApiAppsV1Deployment
@@ -242,10 +251,33 @@ data:
       var selectionSet = `{ metadata { name namespace labels }}`;
       return { resolve, selectionSet };
     }
+    const createMountingResolver = () => {
+      var resolve = async (obj, args, {graphqlMeshK8s}) => {
+        console.log("createMountingResolver");
+        var namespace = obj.metadata && obj.metadata.namespace;
+        var volumes = obj.spec && obj.spec.volumes;
+        if((!volumes) ||(!volumes.length) || (!namespace)) {
+          return [];
+        }
+        var promises = volumes.map(elem => {
+          if(elem.configMap) {
+            return graphqlMeshK8s.api.readCoreV1NamespacedConfigMap({name: elem.configMap.name, namespace });
+          } else if(elem.persistentVolumeClaim) {
+            return graphqlMeshK8s.api.readCoreV1NamespacedPersistentVolumeClaim({name: elem.persistentVolumeClaim.claimName, namespace});
+          } else if(elem.secret) {
+            return graphqlMeshK8s.api.readCoreV1NamespacedSecret({name: elem.secret.secretName, namespace});
+          }
+        });
+        return await Promise.all(promises);
+      };
+      var selectionSet = `{ metadata { name namespace } spec {volumes {configMap {name} persistentVolumeClaim {claimName} secret {secretName}}}}`;
+      return { resolve, selectionSet };
+    }
     const resolvers = {
       IoK8sApiCoreV1Pod: {
         parent: createParentResolver("readAppsV1NamespacedReplicaSet"),
-        connected: createConnectedResolver("listCoreV1NamespacedService")
+        connected: createConnectedResolver("listCoreV1NamespacedService"),
+        mounting: createMountingResolver()
       },
       IoK8sApiAppsV1ReplicaSet: {
         parent: createParentResolver("readAppsV1NamespacedDeployment"),
@@ -464,6 +496,22 @@ data:
         },
         cm: async (obj, {namespace}, { graphqlMeshK8s }) => {
           return await graphqlMeshK8s.api.listCoreV1NamespacedConfigMap({namespace});
+        }
+      },
+      K8sResourceInterface: {
+        __resolveType(obj, context, info){
+          if(obj.kind == "ConfigMap"){
+            return 'IoK8sApiCoreV1ConfigMap';
+          }
+    
+          if(obj.kind == "persistentVolumeClaim"){
+            return 'IoK8sApiCoreV1PersistentVolumeClaim';
+          }
+    
+          if(obj.kind == "Secret"){
+            return 'IoK8sApiCoreV1Secret';
+          }
+          return null;
         }
       }
     };
