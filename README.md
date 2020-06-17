@@ -11,6 +11,7 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
 - [Query example](#query-example)
   - [Example 1. list pods](#example-1-list-pods)
   - [Example 2: get pods with labels](#example-2-get-pods-with-labels)
+  - [Example 2-2. get single pod with name](#example-2-2-get-single-pod-with-name)
   - [Example 3. `parent`/`children`, `connected`/`connecting`, `mounting`, `namespace` and `events`](#example-3-parentchildren-connectedconnecting-mounting-namespace-and-events)
   - [Example 3-2. Debugging with `events`](#example-3-2-debugging-with-events)
   - [Example 4. Helper and error case](#example-4-helper-and-error-case)
@@ -87,6 +88,25 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
   }
   ```
 
+  ## Example 2-2. get single pod with name
+
+  ```graphql
+  {
+    # pods or po
+  	pods(
+      name: "mesh"
+      namespace: "default", 
+    ) {
+      items {
+        metadata {
+          name
+          namespace
+        }
+      }
+    }
+  }
+  ```
+
   ## Example 3. `parent`/`children`, `connected`/`connecting`, `mounting`, `namespace` and `events`
 
   These are original fields.
@@ -97,11 +117,6 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
         items {
           metadata {
             name
-            namespace
-            ownerReferences {
-              name
-            }
-            labels
           }
           parent { # ReplicaSets (Pod's parent)
             parent { # Deployments (ReplicaSet's parent)
@@ -113,9 +128,6 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
               items {
                 metadata {
                   name
-                  ownerReferences {
-                    name
-                  }
                 }
               }
             }
@@ -124,9 +136,6 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
             items {
               metadata {
                 name
-              }
-              spec {
-                selector
               }
               connecting { # Pods (Service's connecting targets)
                 items {
