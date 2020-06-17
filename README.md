@@ -11,7 +11,8 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
 - [Query example](#query-example)
   - [Example 1. list pods](#example-1-list-pods)
   - [Example 2: get pods with labels](#example-2-get-pods-with-labels)
-  - [Example 3. `parent`/`children` and `connected`/`connecting`](#example-3-parentchildren-and-connectedconnecting)
+  - [Example 3. `parent`/`children`, `connected`/`connecting`, `mounting`, `namespace` and `events`](#example-3-parentchildren-connectedconnecting-mounting-namespace-and-events)
+  - [Example 3-2. Debugging with `events`](#example-3-2-debugging-with-events)
   - [Example 4. Helper and error case](#example-4-helper-and-error-case)
 - [Start up](#start-up)
   - [Prerequisites](#prerequisites)
@@ -86,7 +87,7 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
   }
   ```
 
-  ## Example 3. `parent`/`children` and `connected`/`connecting`
+  ## Example 3. `parent`/`children`, `connected`/`connecting`, `mounting`, `namespace` and `events`
 
   These are original fields.
 
@@ -147,6 +148,55 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
   | `children` | Drill down owner links downward. Search for all child resource elements which has owner link to original resource. | `Deployment.children` -> `[ReplicaSet]`, `ReplicaSet.children` -> `[Pod]`|
   | `connecting` | Search for all resource elements which have the same labels as `la belSelector` of original resource.  | `Service.connecting` -> `[Pod]` |
   | `connected` | Search for resources whose `labelSelector` includes all labels of original resource | `Pod.conntected` -> `Service` |
+
+  ## Example 3-2. Debugging with `events`
+  
+  This is useful for Pod debugging.
+
+  ```graphql
+  query {
+    po(namespace: "default") {
+      items {
+        metadata {
+          name
+        }
+        status {
+          startTime
+          containerStatuses {
+            state {
+              terminated {
+                message
+              }
+              waiting {
+                message
+                reason
+              }
+            }
+          }
+        }
+        events {
+          ...eventsContents   
+        }
+        parent {
+          parent {
+            events {
+              ...eventsContents
+            }
+          }
+        }
+      }
+    }
+  }
+
+  fragment eventsContents on IoK8sApiCoreV1EventList {
+    items {
+      message
+      reason
+    }
+  }
+  ```
+
+  ![](img/debugging.png)
 
   ## Example 4. Helper and error case
 
