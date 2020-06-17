@@ -148,6 +148,9 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
   | `children` | Drill down owner links downward. Search for all child resource elements which has owner link to original resource. | `Deployment.children` -> `[ReplicaSet]`, `ReplicaSet.children` -> `[Pod]`|
   | `connecting` | Search for all resource elements which have the same labels as `la belSelector` of original resource.  | `Service.connecting` -> `[Pod]` |
   | `connected` | Search for resources whose `labelSelector` includes all labels of original resource | `Pod.conntected` -> `Service` |
+  | `mounting` | Search for resources which are mounted as Volumes in the Pod | `Pod.mounting` -> `[Secret or ConfigMap or PersistentVolumeClaim]` |
+  | `events` | Search for events related to the target resource | `Pod(and other resources).events` -> `[Event]` |
+  | `namespace` | Direct link to namespace object | `Pod(and other resources).namespace` --> `Namespace` ]
 
   ## Example 3-2. Debugging with `events`
   
