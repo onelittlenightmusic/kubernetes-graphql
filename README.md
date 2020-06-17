@@ -12,7 +12,7 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
   - [Example 1. list pods](#example-1-list-pods)
   - [Example 2: get pods with labels](#example-2-get-pods-with-labels)
   - [Example 2-2. get single pod with name](#example-2-2-get-single-pod-with-name)
-  - [Example 3. `parent`/`children`, `connected`/`connecting`, `mounting`, `namespace` and `events`](#example-3-parentchildren-connectedconnecting-mounting-namespace-and-events)
+  - [Example 3-1. `parent`/`children`, `connected`/`connecting`](#example-3-1-parentchildren-connectedconnecting)
   - [Example 3-2. Debugging with `events`](#example-3-2-debugging-with-events)
   - [Example 4. Helper and error case](#example-4-helper-and-error-case)
 - [Start up](#start-up)
@@ -21,6 +21,7 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
   - [Case 2 : with Helm](#case-2--with-helm)
 - [Cleanup](#cleanup)
 - [Query](#query)
+- [Original resolvers (`parent/children`, `connecting/connected`, `mounting`, `namespace` and `events`)](#original-resolvers-parentchildren-connectingconnected-mounting-namespace-and-events)
 - [Architecture](#architecture)
 - [Customize](#customize)
 - [Reference](#reference)
@@ -107,9 +108,9 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
   }
   ```
 
-  ## Example 3. `parent`/`children`, `connected`/`connecting`, `mounting`, `namespace` and `events`
+  ## Example 3-1. `parent`/`children`, `connected`/`connecting`
 
-  These are original fields.
+  These are original fields. Please refer to [Original resolvers](#original-resolvers).
 
   ```graphql
     query q {
@@ -151,23 +152,19 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
     }
   ```
 
-  | Name | Value | Example |
-  |-|-|-|
-  | `parent` | Follow a owner link which means dependency in Kubernetes  | `Pod.parent` -> `ReplicaSet`, `ReplicaSet.parent` -> `Deployment` |
-  | `children` | Drill down owner links downward. Search for all child resource elements which has owner link to original resource. | `Deployment.children` -> `[ReplicaSet]`, `ReplicaSet.children` -> `[Pod]`|
-  | `connecting` | Search for all resource elements which have the same labels as `la belSelector` of original resource.  | `Service.connecting` -> `[Pod]` |
-  | `connected` | Search for resources whose `labelSelector` includes all labels of original resource | `Pod.conntected` -> `Service` |
-  | `mounting` | Search for resources which are mounted as Volumes in the Pod | `Pod.mounting` -> `[Secret or ConfigMap or PersistentVolumeClaim]` |
-  | `events` | Search for events related to the target resource | `Pod(and other resources).events` -> `[Event]` |
-  | `namespace` | Direct link to namespace object | `Pod(and other resources).namespace` --> `Namespace` ]
-
   ## Example 3-2. Debugging with `events`
   
   This is useful for Pod debugging.
 
+  ```sh
+  kubectl get po; (check...) kubectl get deployment; (check...) kubectl get events ...
+  ```
+
+  This query replaces many operations of `kubectl`.
+
   ```graphql
   query {
-    po(namespace: "default") {
+    po(namespace: "default") { # Pod
       items {
         metadata {
           name
@@ -186,12 +183,12 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
             }
           }
         }
-        events {
+        events { # Get events list related to Pod
           ...eventsContents   
         }
-        parent {
-          parent {
-            events {
+        parent { # ReplicaSet or DaemonSet or StatefulSet (if any exists)
+          parent { # Deployment (if any exists)
+            events { # Get events for the above grandparent resources. 
               ...eventsContents
             }
           }
@@ -325,6 +322,20 @@ The query methods follow [Kubernetes Resource Type](https://kubernetes.io/docs/r
 |          `persistentvolumes(namespace: String!)`|`pv`|
 |          `secrets(namespace: String!)`||
 |          `configmaps(namespace: String!)`|`cm`|
+
+# Original resolvers (`parent/children`, `connecting/connected`, `mounting`, `namespace` and `events`)
+
+There are some original resolvers inside some resource types. These are "links" from one resource to another. 
+
+  | Name | Value | Example |
+  |-|-|-|
+  | `parent` | Follow a owner link which means dependency in Kubernetes  | `Pod.parent` -> `ReplicaSet`, `ReplicaSet.parent` -> `Deployment` |
+  | `children` | Drill down owner links downward. Search for all child resource elements which has owner link to original resource. | `Deployment.children` -> `[ReplicaSet]`, `ReplicaSet.children` -> `[Pod]`|
+  | `connecting` | Search for all resource elements which have the same labels as `la belSelector` of original resource.  | `Service.connecting` -> `[Pod]` |
+  | `connected` | Search for resources whose `labelSelector` includes all labels of original resource | `Pod.conntected` -> `Service` |
+  | `mounting` | Search for resources which are mounted as Volumes in the Pod | `Pod.mounting` -> `[Secret or ConfigMap or PersistentVolumeClaim]` |
+  | `events` | Search for events related to the target resource | `Pod(and other resources).events` -> `[Event]` |
+  | `namespace` | Direct link to namespace object | `Pod(and other resources).namespace` --> `Namespace` |
 
 # Architecture
 
