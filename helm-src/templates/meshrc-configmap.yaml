@@ -12,90 +12,115 @@ data:
             baseUrl: http://{{- include "kubernetes-api-proxy.fullname" $newContext -}}:8001/
             skipSchemaValidation: true
     additionalTypeDefs: |
-        extend type IoK8sApiCoreV1Pod {
+        interface K8sResourceInterface {
+          kind: String
+          apiVersion: String
+          metadata: IoK8sApimachineryPkgApisMetaV1ObjectMeta
+        }
+        interface K8sNamespacedResourceInterface {
+          namespace: IoK8sApiCoreV1Namespace
+        }
+        interface K8sEventOwnerInterface {
+          events: IoK8sApiCoreV1EventList
+        }
+        extend type IoK8sApiCoreV1ConfigMap implements K8sResourceInterface
+        extend type IoK8sApiCoreV1PersistentVolumeClaim implements K8sResourceInterface
+        extend type IoK8sApiCoreV1Secret implements K8sResourceInterface
+        extend type IoK8sApiCoreV1Pod implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
           parent: IoK8sApiAppsV1ReplicaSet
           connected: IoK8sApiCoreV1ServiceList
+          mounting: [K8sResourceInterface]
+          namespace: IoK8sApiCoreV1Namespace
+          events: IoK8sApiCoreV1EventList
         }
-        extend type IoK8sApiAppsV1ReplicaSet {
+        extend type IoK8sApiAppsV1ReplicaSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
           parent: IoK8sApiAppsV1Deployment
           children: IoK8sApiCoreV1PodList
+          namespace: IoK8sApiCoreV1Namespace
+          events: IoK8sApiCoreV1EventList
         }
-        extend type IoK8sApiAppsV1Deployment {
+        extend type IoK8sApiAppsV1Deployment implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
           children: IoK8sApiAppsV1ReplicaSetList
+          namespace: IoK8sApiCoreV1Namespace
+          events: IoK8sApiCoreV1EventList
         }
-        extend type IoK8sApiCoreV1Service {
+        extend type IoK8sApiCoreV1Service implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
           connecting: IoK8sApiCoreV1PodList
+          namespace: IoK8sApiCoreV1Namespace
+          events: IoK8sApiCoreV1EventList
         }
         extend type Query {
-          nodes: IoK8sApiCoreV1NodeList
-          namespaces: IoK8sApiCoreV1NamespaceList
-          clusterrolebindings: IoK8sApiRbacV1ClusterRoleBindingList
-          clusterroles: IoK8sApiRbacV1ClusterRoleList
-          storageclasses: IoK8sApiStorageV1StorageClassList
-          mutatingwebhookconfigurations: IoK8sApiAdmissionregistrationV1MutatingWebhookConfigurationList
-          validatingwebhookconfigurations: IoK8sApiAdmissionregistrationV1ValidatingWebhookConfigurationList
-          certificatesigningrequests: IoK8sApiCertificatesV1beta1CertificateSigningRequestList
-          podsecuritypolicies: IoK8sApiPolicyV1beta1PodSecurityPolicyList
-          componentstatuses: IoK8sApiCoreV1ComponentStatusList
-          customresourcedefinitions: IoK8sApiextensionsApiserverPkgApisApiextensionsV1CustomResourceDefinitionList
-          priorityclasses: IoK8sApiSchedulingV1PriorityClassList
-          csidrivers: IoK8sApiStorageV1CSIDriverList
-          csinodes: IoK8sApiStorageV1CSINodeList
-          volumeattachments: IoK8sApiStorageV1VolumeAttachmentList
-          pods(namespace: String!): IoK8sApiCoreV1PodList
-          services(namespace: String!): IoK8sApiCoreV1ServiceList
-          ingresses(namespace: String!): IoK8sApiNetworkingV1beta1IngressClassList
-          replicasets(namespace: String!): IoK8sApiAppsV1ReplicaSetList
-          deployments(namespace: String!): IoK8sApiAppsV1Deployment
-          daemonsets(namespace: String!): IoK8sApiAppsV1DaemonSetList
-          statefulsets(namespace: String!): IoK8sApiAppsV1StatefulSetList
-          replicationcontrollers(namespace: String!): IoK8sApiCoreV1ReplicationControllerList
-          horizontalpodautoscalers(namespace: String!): IoK8sApiAutoscalingV1HorizontalPodAutoscalerList
-          cronjobs(namespace: String!): IoK8sApiBatchV1beta1CronJobList
-          jobs(namespace: String!): IoK8sApiBatchV1JobList
-          rolebindings(namespace: String!): IoK8sApiRbacV1RoleBindingList
-          roles(namespace: String!): IoK8sApiRbacV1RoleList
-          serviceaccounts(namespace: String!): IoK8sApiCoreV1ServiceAccountList
-          resourcequotas(namespace: String!): IoK8sApiCoreV1ResourceQuotaList
-          endpoints(namespace: String!): IoK8sApiCoreV1EndpointsList
-          controllerrevisions(namespace: String!): IoK8sApiAppsV1ControllerRevisionList
-          networkpolicies(namespace: String!): IoK8sApiNetworkingV1NetworkPolicyList
-          poddisruptionbudgets(namespace: String!): IoK8sApiPolicyV1beta1PodDisruptionBudgetList
-          limitranges(namespace: String!): IoK8sApiCoreV1LimitRangeList
-          podtemplates(namespace: String!): IoK8sApiCoreV1PodTemplateList
-          events(namespace: String!): IoK8sApiEventsV1beta1EventList
-          persistentvolumeclaims(namespace: String!): IoK8sApiCoreV1PersistentVolumeClaimList
-          persistentvolumes(namespace: String!): IoK8sApiCoreV1PersistentVolumeList
-          secrets(namespace: String!): IoK8sApiCoreV1SecretList
-          configmaps(namespace: String!): IoK8sApiCoreV1ConfigMapList
-          no: IoK8sApiCoreV1NodeList
-          ns: IoK8sApiCoreV1NamespaceList
-          sc: IoK8sApiStorageV1StorageClassList
-          csr: IoK8sApiCertificatesV1beta1CertificateSigningRequestList
-          psp: IoK8sApiPolicyV1beta1PodSecurityPolicyList
-          cs: IoK8sApiCoreV1ComponentStatusList
-          crd: IoK8sApiextensionsApiserverPkgApisApiextensionsV1CustomResourceDefinitionList
-          pc: IoK8sApiSchedulingV1PriorityClassList
-          po(namespace: String!): IoK8sApiCoreV1PodList
-          svc(namespace: String!): IoK8sApiCoreV1ServiceList
-          rs(namespace: String!): IoK8sApiAppsV1ReplicaSetList
-          deploy(namespace: String!): IoK8sApiAppsV1Deployment
-          pvc(namespace: String!): IoK8sApiCoreV1PersistentVolumeClaimList
-          pv(namespace: String!): IoK8sApiCoreV1PersistentVolumeList
-          ing(namespace: String!): IoK8sApiNetworkingV1beta1IngressClassList
-          ds(namespace: String!): IoK8sApiAppsV1DaemonSetList
-          sts(namespace: String!): IoK8sApiAppsV1StatefulSetList
-          rc(namespace: String!): IoK8sApiCoreV1ReplicationControllerList
-          hpa(namespace: String!): IoK8sApiAutoscalingV1HorizontalPodAutoscalerList
-          cj(namespace: String!): IoK8sApiBatchV1beta1CronJobList
-          sa(namespace: String!): IoK8sApiCoreV1ServiceAccountList
-          quota(namespace: String!): IoK8sApiCoreV1ResourceQuotaList
-          ep(namespace: String!): IoK8sApiCoreV1EndpointsList
-          netpol(namespace: String!): IoK8sApiNetworkingV1NetworkPolicyList
-          pdb(namespace: String!): IoK8sApiPolicyV1beta1PodDisruptionBudgetList
-          limits(namespace: String!): IoK8sApiCoreV1LimitRangeList
-          ev(namespace: String!): IoK8sApiEventsV1beta1EventList
-          cm(namespace: String!): IoK8sApiCoreV1ConfigMapList
+          # cluster-wide
+          nodes(name: String): IoK8sApiCoreV1NodeList
+          namespaces(name: String): IoK8sApiCoreV1NamespaceList
+          clusterrolebindings(name: String): IoK8sApiRbacV1ClusterRoleBindingList
+          clusterroles(name: String): IoK8sApiRbacV1ClusterRoleList
+          storageclasses(name: String): IoK8sApiStorageV1StorageClassList
+          mutatingwebhookconfigurations(name: String): IoK8sApiAdmissionregistrationV1MutatingWebhookConfigurationList
+          validatingwebhookconfigurations(name: String): IoK8sApiAdmissionregistrationV1ValidatingWebhookConfigurationList
+          certificatesigningrequests(name: String): IoK8sApiCertificatesV1beta1CertificateSigningRequestList
+          podsecuritypolicies(name: String): IoK8sApiPolicyV1beta1PodSecurityPolicyList
+          componentstatuses(name: String): IoK8sApiCoreV1ComponentStatusList
+          customresourcedefinitions(name: String): IoK8sApiextensionsApiserverPkgApisApiextensionsV1CustomResourceDefinitionList
+          priorityclasses(name: String): IoK8sApiSchedulingV1PriorityClassList
+          csidrivers(name: String): IoK8sApiStorageV1CSIDriverList
+          csinodes(name: String): IoK8sApiStorageV1CSINodeList
+          volumeattachments(name: String): IoK8sApiStorageV1VolumeAttachmentList
+          # namespaced
+          pods(namespace: String!, name: String): IoK8sApiCoreV1PodList
+          services(namespace: String!, name: String): IoK8sApiCoreV1ServiceList
+          ingresses(namespace: String!, name: String): IoK8sApiNetworkingV1beta1IngressClassList
+          replicasets(namespace: String!, name: String): IoK8sApiAppsV1ReplicaSetList
+          deployments(namespace: String!, name: String): IoK8sApiAppsV1Deployment
+          daemonsets(namespace: String!, name: String): IoK8sApiAppsV1DaemonSetList
+          statefulsets(namespace: String!, name: String): IoK8sApiAppsV1StatefulSetList
+          replicationcontrollers(namespace: String!, name: String): IoK8sApiCoreV1ReplicationControllerList
+          horizontalpodautoscalers(namespace: String!, name: String): IoK8sApiAutoscalingV1HorizontalPodAutoscalerList
+          cronjobs(namespace: String!, name: String): IoK8sApiBatchV1beta1CronJobList
+          jobs(namespace: String!, name: String): IoK8sApiBatchV1JobList
+          rolebindings(namespace: String!, name: String): IoK8sApiRbacV1RoleBindingList
+          roles(namespace: String!, name: String): IoK8sApiRbacV1RoleList
+          serviceaccounts(namespace: String!, name: String): IoK8sApiCoreV1ServiceAccountList
+          resourcequotas(namespace: String!, name: String): IoK8sApiCoreV1ResourceQuotaList
+          endpoints(namespace: String!, name: String): IoK8sApiCoreV1EndpointsList
+          controllerrevisions(namespace: String!, name: String): IoK8sApiAppsV1ControllerRevisionList
+          networkpolicies(namespace: String!, name: String): IoK8sApiNetworkingV1NetworkPolicyList
+          poddisruptionbudgets(namespace: String!, name: String): IoK8sApiPolicyV1beta1PodDisruptionBudgetList
+          limitranges(namespace: String!, name: String): IoK8sApiCoreV1LimitRangeList
+          podtemplates(namespace: String!, name: String): IoK8sApiCoreV1PodTemplateList
+          events(namespace: String!, name: String): IoK8sApiCoreV1EventList
+          persistentvolumeclaims(namespace: String!, name: String): IoK8sApiCoreV1PersistentVolumeClaimList
+          persistentvolumes(namespace: String!, name: String): IoK8sApiCoreV1PersistentVolumeList
+          secrets(namespace: String!, name: String): IoK8sApiCoreV1SecretList
+          configmaps(namespace: String!, name: String): IoK8sApiCoreV1ConfigMapList
+          no(name: String): IoK8sApiCoreV1NodeList
+          ns(name: String): IoK8sApiCoreV1NamespaceList
+          sc(name: String): IoK8sApiStorageV1StorageClassList
+          csr(name: String): IoK8sApiCertificatesV1beta1CertificateSigningRequestList
+          psp(name: String): IoK8sApiPolicyV1beta1PodSecurityPolicyList
+          cs(name: String): IoK8sApiCoreV1ComponentStatusList
+          crd(name: String): IoK8sApiextensionsApiserverPkgApisApiextensionsV1CustomResourceDefinitionList
+          pc(name: String): IoK8sApiSchedulingV1PriorityClassList
+          po(namespace: String!, name: String): IoK8sApiCoreV1PodList
+          svc(namespace: String!, name: String): IoK8sApiCoreV1ServiceList
+          rs(namespace: String!, name: String): IoK8sApiAppsV1ReplicaSetList
+          deploy(namespace: String!, name: String): IoK8sApiAppsV1DeploymentList
+          pvc(namespace: String!, name: String): IoK8sApiCoreV1PersistentVolumeClaimList
+          pv(namespace: String!, name: String): IoK8sApiCoreV1PersistentVolumeList
+          ing(namespace: String!, name: String): IoK8sApiNetworkingV1beta1IngressClassList
+          ds(namespace: String!, name: String): IoK8sApiAppsV1DaemonSetList
+          sts(namespace: String!, name: String): IoK8sApiAppsV1StatefulSetList
+          rc(namespace: String!, name: String): IoK8sApiCoreV1ReplicationControllerList
+          hpa(namespace: String!, name: String): IoK8sApiAutoscalingV1HorizontalPodAutoscalerList
+          cj(namespace: String!, name: String): IoK8sApiBatchV1beta1CronJobList
+          sa(namespace: String!, name: String): IoK8sApiCoreV1ServiceAccountList
+          quota(namespace: String!, name: String): IoK8sApiCoreV1ResourceQuotaList
+          ep(namespace: String!, name: String): IoK8sApiCoreV1EndpointsList
+          netpol(namespace: String!, name: String): IoK8sApiNetworkingV1NetworkPolicyList
+          pdb(namespace: String!, name: String): IoK8sApiPolicyV1beta1PodDisruptionBudgetList
+          limits(namespace: String!, name: String): IoK8sApiCoreV1LimitRangeList
+          ev(namespace: String!, name: String): IoK8sApiCoreV1EventList
+          cm(namespace: String!, name: String): IoK8sApiCoreV1ConfigMapList
         }
     additionalResolvers:
       - ./additional-resolvers.js
@@ -148,10 +173,89 @@ data:
     
   init.sh: |-
     #!/bin/bash
+    yarn add deepmerge graphql-fields
     curl -L http://{{- include "kubernetes-api-proxy.fullname" $newContext -}}:8001/openapi/v2 -o swagger.json
   additional-resolvers.js: |-
+    const graphqlFields = require("graphql-fields");
+    const merge = require('deepmerge');
+
+    const resources = {
+      nodes: "CoreV1Node",
+      namespaces: "CoreV1Namespace",
+      clusterrolebindings: "RbacAuthorizationV1ClusterRoleBinding",
+      clusterroles: "RbacAuthorizationV1ClusterRole",
+      storageclasses: "StorageV1StorageClass",
+      mutatingwebhookconfigurations: "AdmissionregistrationV1MutatingWebhookConfiguration",
+      validatingwebhookconfigurations: "AdmissionregistrationV1ValidatingWebhookConfiguration",
+      certificatesigningrequests: "CertificatesV1beta1CertificateSigningRequest",
+      podsecuritypolicies: "PolicyV1beta1PodSecurityPolicy",
+      componentstatuses: "CoreV1ComponentStatus",
+      customresourcedefinitions: "ApiextensionsV1CustomResourceDefinition",
+      priorityclasses: "SchedulingV1PriorityClass",
+      csidrivers: "StorageV1CSIDriver",
+      csinodes: "StorageV1CSINode",
+      volumeattachments: "IoK8sApiStorageV1VolumeAttachment",
+      pods: "CoreV1NamespacedPod",
+      services: "CoreV1NamespacedService",
+      ingresses: "NetworkingV1beta1IngressClass",
+      replicasets: "AppsV1NamespacedReplicaSet",
+      deployments: "AppsV1NamespacedDeployment",
+      statefulsets: "AppsV1NamespacedStatefulSet",
+      daemonsets: "AppsV1NamespacedDaemonSet",
+      replicationcontrollers: "CoreV1NamespacedReplicationController",
+      horizontalpodautoscalers: "AutoscalingV1NamespacedHorizontalPodAutoscaler",
+      cronjobs: "BatchV1beta1NamespacedCronJob",
+      jobs: "BatchV1beta1NamespacedJob",
+      rolebindings: "RbacAuthorizationV1NamespacedRoleBinding",
+      roles: "RbacAuthorizationV1NamespacedRole",
+      serviceaccounts: "CoreV1NamespacedServiceAccount",
+      resourcequotas: "CoreV1NamespacedResourceQuota",
+      endpoints: "CoreV1NamespacedEndpoints",
+      controllerrevisions: "CoreV1NamespacedEndpoints",
+      networkpolicies: "NetworkingV1NamespacedNetworkPolicy",
+      poddisruptionbudgets: "PolicyV1beta1NamespacedPodDisruptionBudget",
+      limitranges: "CoreV1NamespacedLimitRange",
+      podtemplates: "CoreV1NamespacedPodTemplate",
+      events: "CoreV1NamespacedEvent",
+      persistentvolumeclaims: "CoreV1NamespacedPersistentVolumeClaim",
+      persistentvolumes: "CoreV1NamespacedPersistentVolume", 
+      secrets: "CoreV1NamespacedSecret",
+      configmaps: "CoreV1NamespacedConfigMap"
+    };
+
+    const abbreviations = {
+      nodes: "no",
+      namespaces: "ns",
+      storageclasses: "sc",
+      certificatesigningrequests: "csr",
+      podsecuritypolicies: "psp",
+      componentstatuses: "cs",
+      customresourcedefinitions: "crd",
+      priorityclasses: "pc",
+      pods: "po",
+      services: "svc",
+      replicasets: "rc",
+      deployments: "deploy",
+      persistentvolumeclaims: "pvc",
+      persistentvolumes: "pv",
+      ingresses: "ing",
+      statefulsets: "sts",
+      daemonsets: "ds",
+      replicationcontrollers: "rc",
+      horizontalpodautoscalers: "hpa",
+      cronjobs: "cj",
+      serviceaccounts: "sa",
+      resourcequotas: "quota",
+      endpoints: "ep",
+      networkpolicies: "netpol",
+      poddisruptionbudgets: "pdb",
+      limitranges: "limits",
+      events: "ev",
+      configmaps: "cm"
+    };
+
     const createParentResolver = (readfn) => {
-      var resolve = async (obj, args, {graphqlMeshK8s}) => {
+      var resolve = async (obj, args, {graphqlMeshK8s}, info) => {
         console.log("createParentResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var ownerReferences = obj.metadata && obj.metadata.ownerReferences;
@@ -167,23 +271,26 @@ data:
       return { resolve, selectionSet };
     }
     const createChildrenResolver = (listfn) => {
-      var resolve = async (obj, args, {graphqlMeshK8s}) => {
+      var resolve = async (obj, args, {graphqlMeshK8s}, info) => {
         console.log("createChildrenResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var name = obj.metadata && obj.metadata.name;
         if((!name) || (!namespace)) {
-          return null;
+          return { items: [] };
         }
         console.log(name, namespace);
+        var resolverRequirements = { items: {metadata: { labels: true, ownerReferences: {name: true}}}};
+        var mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
+        //console.log(JSON.stringify(mergedFields));
         var _function = graphqlMeshK8s.api[listfn];
-        var list = await _function({ namespace }, { fields: { items: {metadata: { labels: true, ownerReferences: {name: true}}}}});
+        var list = await _function({ namespace }, mergedFields);
         console.log("children base", JSON.stringify(list.items));
         var returnItems = list.items.filter(elem => {
           var ownerReferences = elem.metadata && elem.metadata.ownerReferences;
           if((!ownerReferences) || (!ownerReferences.length)) {
             return false;
           }
-          return name == ownerReferences[0].name;
+          return name == ownerReferences[0].nameStringNonNull; //TOBE: this must be [0].name
         }); 
         list.items = returnItems;
         //console.log(list);
@@ -193,16 +300,20 @@ data:
       return { resolve, selectionSet };
     }
     const createConnectingResolver = (listfn) => {
-      var resolve = async (obj, args, { graphqlMeshK8s }) => {
+      var resolve = async (obj, args, { graphqlMeshK8s }, info) => {
         console.log("createConnectingResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var selector = obj.spec && obj.spec.selector;
         if((!selector) || (!namespace)) {
-          return [];
+          console.log("createConnectingResolver FAILED: ", "selector", selector, "namespace", namespace);
+          return { items: [] };
         }
         var _function = graphqlMeshK8s.api[listfn];
         //var labelSelector = Object.keys(selector).map(key => key+"="+selector[key]).join(",");
-        var list = await _function({ namespace }, { fields: { items: { metadata: {labels: true}}}});
+        var resolverRequirements = { items: { metadata: {labels: true}}};
+        var mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
+        console.log(JSON.stringify(mergedFields));
+        var list = await _function({ namespace }, mergedFields);
         console.log("connecting base", JSON.stringify(list.items));
         //console.log("selector", selector);
         var returnItems = list.items.filter(elem => {
@@ -218,15 +329,17 @@ data:
       return { resolve, selectionSet };
     }
     const createConnectedResolver = (listfn) => {
-      var resolve = async (obj, args, { graphqlMeshK8s }) => {
+      var resolve = async (obj, args, { graphqlMeshK8s }, info) => {
         console.log("createConnectedResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var labels = obj.metadata && obj.metadata.labels;
         if((!labels) || (!namespace)) {
-          return [];
+          return { items: [] };
         }
         var _function = graphqlMeshK8s.api[listfn];
-        var list = await _function({ namespace }, { selectionSet: `{ items {spec {selector }}}`, depth: 4});
+        var resolverRequirements = { items: {spec: {selector: true }}};
+        var mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
+        var list = await _function({ namespace }, mergedFields);
         console.log("connected base", JSON.stringify(list.items));
         var returnItems = list.items.filter(elem => {
           var selector = elem.spec && elem.spec.selector;
@@ -244,231 +357,123 @@ data:
       var selectionSet = `{ metadata { name namespace labels }}`;
       return { resolve, selectionSet };
     }
+    const createMountingResolver = () => {
+      var resolve = async (obj, args, {graphqlMeshK8s}, info) => {
+        console.log("createMountingResolver");
+        var namespace = obj.metadata && obj.metadata.namespace;
+        var volumes = obj.spec && obj.spec.volumes;
+        if((!volumes) ||(!volumes.length) || (!namespace)) {
+          return [];
+        }
+        var promises = volumes.map(elem => {
+          if(elem.configMap) {
+            return graphqlMeshK8s.api.readCoreV1NamespacedConfigMap({name: elem.configMap.name, namespace });
+          } else if(elem.persistentVolumeClaim) {
+            return graphqlMeshK8s.api.readCoreV1NamespacedPersistentVolumeClaim({name: elem.persistentVolumeClaim.claimName, namespace});
+          } else if(elem.secret) {
+            return graphqlMeshK8s.api.readCoreV1NamespacedSecret({name: elem.secret.secretName, namespace});
+          }
+        });
+        return await Promise.all(promises);
+      };
+      var selectionSet = `{ metadata { name namespace } spec {volumes {configMap {name} persistentVolumeClaim {claimName} secret {secretName}}}}`;
+      return { resolve, selectionSet };
+    }
+    const createEventResolver = () => {
+      var resolve = async (obj, args, {graphqlMeshK8s}, info) => {
+        console.log("createEventResolver");
+        var namespace = obj.metadata && obj.metadata.namespace;
+        var name = obj.metadata && obj.metadata.name;
+        var kind = obj.kind;
+        //console.log(namespace, name, kind);
+        if((!name) /*|| (!kind)*/ || (!namespace)) {
+          return { items: [] };
+        }
+        const resolverRequirements = { items: { involvedObject: { kind: true, name: true }}};
+        const mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
+        const events = await graphqlMeshK8s.api.listCoreV1NamespacedEvent({ namespace }, mergedFields);
+        var returnEvents = events.items.filter(elem => {
+          var involvedObject = elem.involvedObject;
+          console.log(involvedObject);
+          return (involvedObject.name == name) /*&& (involvedObject.kind == kind)*/;
+        });
+        events.items = returnEvents;
+        return events;
+      };
+      var selectionSet = `{ kind metadata { namespace name }}`;
+      return { resolve, selectionSet };
+    }
+    const createNamespaceResolver = () => {
+      var resolve = async (obj, args, {graphqlMeshK8s}, info) => {
+        console.log("createNamespaceResolver");
+        var namespace = obj.metadata && obj.metadata.namespace;
+        if(!namespace) {
+          return [];
+        }
+        return await graphqlMeshK8s.api.readCoreV1Namespace({ name: namespace });
+      };
+      var selectionSet = `{ metadata { namespace }}`;
+      return { resolve, selectionSet };
+    }
+    const createRootResolver = (listfn, readfn) => {
+      return async (obj, args, { graphqlMeshK8s }) => {
+        if('name' in args) {
+          return { items: [await graphqlMeshK8s.api[readfn](args)] };
+        }
+        return await graphqlMeshK8s.api[listfn](args);
+      };
+    }
+
     const resolvers = {
       IoK8sApiCoreV1Pod: {
         parent: createParentResolver("readAppsV1NamespacedReplicaSet"),
-        connected: createConnectedResolver("listCoreV1NamespacedService")
+        connected: createConnectedResolver("listCoreV1NamespacedService"),
+        mounting: createMountingResolver(),
+        namespace: createNamespaceResolver(),
+        events: createEventResolver()
+
       },
       IoK8sApiAppsV1ReplicaSet: {
         parent: createParentResolver("readAppsV1NamespacedDeployment"),
-        children: createChildrenResolver("listCoreV1NamespacedPod")
+        children: createChildrenResolver("listCoreV1NamespacedPod"),
+        namespace: createNamespaceResolver(),
+        events: createEventResolver()
       },
       IoK8sApiAppsV1Deployment: {
-        children: createChildrenResolver("listAppsV1NamespacedReplicaSet")
+        children: createChildrenResolver("listAppsV1NamespacedReplicaSet"),
+        namespace: createNamespaceResolver(),
+        events: createEventResolver()
       },
       IoK8sApiCoreV1Service: {
-        connecting: createConnectingResolver("listCoreV1NamespacedPod")
+        connecting: createConnectingResolver("listCoreV1NamespacedPod"),
+        namespace: createNamespaceResolver(),
+        events: createEventResolver()
       },
-      Query: {
-        nodes: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1Node();
-        },
-        namespaces: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1Namespace();
-        },
-        clusterrolebindings: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listRbacAuthorizationV1ClusterRoleBinding();
-        },
-        clusterroles: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listRbacAuthorizationV1ClusterRole();
-        },
-        storageclasses: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listStorageV1StorageClass();
-        },
-        mutatingwebhookconfigurations: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listAdmissionregistrationV1MutatingWebhookConfiguration();
-        },
-        validatingwebhookconfigurations: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listAdmissionregistrationV1ValidatingWebhookConfiguration();
-        },
-        certificatesigningrequests: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCertificatesV1beta1CertificateSigningRequest();
-        },
-        podsecuritypolicies: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listPolicyV1beta1PodSecurityPolicy();
-        },
-        componentstatuses: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1ComponentStatus();
-        },
-        customresourcedefinitions: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listApiextensionsV1CustomResourceDefinition();
-        },
-        priorityclasses: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listSchedulingV1PriorityClass();
-        },
-        csidrivers: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listStorageV1CSIDriver();
-        },
-        csinodes: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listStorageV1CSINode();
-        },
-        volumeattachments: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.IoK8sApiStorageV1VolumeAttachmentList();
-        },
-        pods: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedPod({namespace});
-        },
-        services: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedService({namespace});
-        },
-        ingresses: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listNetworkingV1beta1IngressClass({namespace});
-        },
-        replicasets: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listAppsV1NamespacedReplicaSet({namespace});
-        },
-        deployments: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listAppsV1NamespacedDeployment({namespace});
-        },
-        statefulsets: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listAppsV1NamespacedStatefulSet({namespace});
-        },
-        daemonsets: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listAppsV1NamespacedDaemonSet({namespace});
-        },
-        replicationcontrollers: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedReplicationController({namespace});
-        },
-        horizontalpodautoscalers: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listAutoscalingV1NamespacedHorizontalPodAutoscaler({namespace});
-        },
-        cronjobs: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listBatchV1beta1NamespacedCronJob({namespace});
-        },
-        jobs: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listBatchV1beta1NamespacedJob({namespace});
-        },
-        rolebindings: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listRbacAuthorizationV1NamespacedRoleBinding({namespace});
-        },
-        roles: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listRbacAuthorizationV1NamespacedRole({namespace});
-        },
-        serviceaccounts: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedServiceAccount({namespace});
-        },
-        resourcequotas: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedResourceQuota({namespace});
-        },
-        endpoints: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedEndpoints({namespace});
-        },
-        controllerrevisions: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedEndpoints({namespace});
-        },
-        networkpolicies: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listNetworkingV1NamespacedNetworkPolicy({namespace});
-        },
-        poddisruptionbudgets: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listPolicyV1beta1NamespacedPodDisruptionBudget({namespace});
-        },
-        limitranges: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedLimitRange({namespace});
-        },
-        podtemplates: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedPodTemplate({namespace});
-        },
-        events: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listEventsV1beta1NamespacedEvent({namespace});
-        },
-        persistentvolumeclaims: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedPersistentVolumeClaim({namespace});
-        },
-        persistentvolumes: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedPersistentVolume({namespace});
-        },
-        secrets: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedSecret({namespace});
-        },
-        configmaps: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedConfigMap({namespace});
-        },
-        no: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1Node();
-        },
-        ns: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1Namespace();
-        },
-        sc: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listStorageV1StorageClass();
-        },
-        csr: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCertificatesV1beta1CertificateSigningRequest();
-        },
-        psp: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listPolicyV1beta1PodSecurityPolicy();
-        },
-        cs: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1ComponentStatus();
-        },
-        crd: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listApiextensionsV1CustomResourceDefinition();
-        },
-        pc: async (obj, _, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listSchedulingV1PriorityClass();
-        },
-        po: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedPod({namespace});
-        },
-        svc: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedService({namespace});
-        },
-        rs: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listAppsV1NamespacedReplicaSet({namespace});
-        },
-        deploy: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listAppsV1NamespacedDeployment({namespace});
-        },
-        pvc: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedPersistentVolumeClaim({namespace});
-        },
-        pv: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedPersistentVolume({namespace});
-        },
-        ing: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listNetworkingV1beta1IngressClass({namespace});
-        },
-        sts: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listAppsV1NamespacedStatefulSet({namespace});
-        },
-        ds: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listAppsV1NamespacedDaemonSet({namespace});
-        },
-        rc: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedReplicationController({namespace});
-        },
-        hpa: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listAutoscalingV1NamespacedHorizontalPodAutoscaler({namespace});
-        },
-        cj: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listBatchV1beta1NamespacedCronJob({namespace});
-        },
-        sa: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedServiceAccount({namespace});
-        },
-        quota: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedResourceQuota({namespace});
-        },
-        ep: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedEndpoints({namespace});
-        },
-        netpol: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listNetworkingV1NamespacedNetworkPolicy({namespace});
-        },
-        pdb: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listPolicyV1beta1NamespacedPodDisruptionBudget({namespace});
-        },
-        limits: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedLimitRange({namespace});
-        },
-        ev: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listEventsV1beta1NamespacedEvent({namespace});
-        },
-        cm: async (obj, {namespace}, { graphqlMeshK8s }) => {
-          return await graphqlMeshK8s.api.listCoreV1NamespacedConfigMap({namespace});
+      K8sResourceInterface: {
+        __resolveType(obj, context, info){
+          if(obj.kind == "ConfigMap"){
+            return 'IoK8sApiCoreV1ConfigMap';
+          }
+    
+          if(obj.kind == "persistentVolumeClaim"){
+            return 'IoK8sApiCoreV1PersistentVolumeClaim';
+          }
+    
+          if(obj.kind == "Secret"){
+            return 'IoK8sApiCoreV1Secret';
+          }
+          return null;
         }
       }
     };
+    var addonQueryResolver = {};
+    for(resource in resources) {
+      addonQueryResolver[resource] = createRootResolver("list"+resources[resource], "read"+resources[resource]);
+    }
+    for(key in abbreviations) {
+      addonQueryResolver[abbreviations[key]] = createRootResolver("list"+resources[key], "read"+resources[key]);
+    }
+    resolvers.Query = addonQueryResolver;
     module.exports = { resolvers };
 kind: ConfigMap
 metadata:
