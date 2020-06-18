@@ -11,6 +11,173 @@ data:
             source: /work/swagger.json
             baseUrl: http://{{- include "kubernetes-api-proxy.fullname" $newContext -}}:8001/
             skipSchemaValidation: true
+        transforms:
+          - rename:
+              - from: IoK8sApiCoreV1Node
+                to: Node
+              - from: IoK8sApiCoreV1NodeList
+                to: NodeList
+              - from: IoK8sApiCoreV1Namespace
+                to: Namespace
+              - from: IoK8sApiCoreV1NamespaceList
+                to: NamespaceList
+              - from: IoK8sApiRbacV1ClusterRoleBinding
+                to: ClusterRoleBinding
+              - from: IoK8sApiRbacV1ClusterRoleBindingList
+                to: ClusterRoleBindingList
+              - from: IoK8sApiRbacV1ClusterRole
+                to: ClusterRole
+              - from: IoK8sApiRbacV1ClusterRoleList
+                to: ClusterRoleList
+              - from: IoK8sApiStorageV1StorageClass
+                to: StorageClass
+              - from: IoK8sApiStorageV1StorageClassList
+                to: StorageClassList
+              - from: IoK8sApiAdmissionregistrationV1MutatingWebhookConfiguration
+                to: MutatingWebhookConfiguration
+              - from: IoK8sApiAdmissionregistrationV1MutatingWebhookConfigurationList
+                to: MutatingWebhookConfigurationList
+              - from: IoK8sApiAdmissionregistrationV1ValidatingWebhookConfiguration
+                to: ValidatingWebhookConfiguration
+              - from: IoK8sApiAdmissionregistrationV1ValidatingWebhookConfigurationList
+                to: ValidatingWebhookConfigurationList
+              - from: IoK8sApiCertificatesV1beta1CertificateSigningRequest
+                to: CertificateSigningRequest
+              - from: IoK8sApiCertificatesV1beta1CertificateSigningRequestList
+                to: CertificateSigningRequestList
+              - from: IoK8sApiPolicyV1beta1PodSecurityPolicy
+                to: PodSecurityPolicy
+              - from: IoK8sApiPolicyV1beta1PodSecurityPolicyList
+                to: PodSecurityPolicyList
+              - from: IoK8sApiCoreV1ComponentStatus
+                to: ComponentStatus
+              - from: IoK8sApiCoreV1ComponentStatusList
+                to: ComponentStatusList
+              - from: IoK8sApiextensionsApiserverPkgApisApiextensionsV1CustomResourceDefinition
+                to: CustomResourceDefinition
+              - from: IoK8sApiextensionsApiserverPkgApisApiextensionsV1CustomResourceDefinitionList
+                to: CustomResourceDefinitionList
+              - from: IoK8sApiSchedulingV1PriorityClass
+                to: PriorityClass
+              - from: IoK8sApiSchedulingV1PriorityClassList
+                to: PriorityClassList
+              - from: IoK8sApiStorageV1CSIDriver
+                to: CSIDriver
+              - from: IoK8sApiStorageV1CSIDriverList
+                to: CSIDriverList
+              - from: IoK8sApiStorageV1CSINode
+                to: CSINode
+              - from: IoK8sApiStorageV1CSINodeList
+                to: CSINodeList
+              - from: IoK8sApiStorageV1VolumeAttachment
+                to: VolumeAttachment
+              - from: IoK8sApiStorageV1VolumeAttachmentList
+                to: VolumeAttachmentList
+              - from: IoK8sApiCoreV1Pod
+                to: Pod
+              - from: IoK8sApiCoreV1PodList
+                to: PodList
+              - from: IoK8sApiCoreV1Service
+                to: Service
+              - from: IoK8sApiCoreV1ServiceList
+                to: ServiceList
+              - from: IoK8sApiNetworkingV1beta1Ingress
+                to: Ingress
+              - from: IoK8sApiNetworkingV1beta1IngressList
+                to: IngressList
+              - from: IoK8sApiAppsV1ReplicaSet
+                to: ReplicaSet
+              - from: IoK8sApiAppsV1ReplicaSetList
+                to: ReplicaSetList
+              - from: IoK8sApiAppsV1Deployment
+                to: Deployment
+              - from: IoK8sApiAppsV1DeploymentList
+                to: DeploymentList
+              - from: IoK8sApiAppsV1DaemonSet
+                to: DaemonSet
+              - from: IoK8sApiAppsV1DaemonSetList
+                to: DaemonSetList
+              - from: IoK8sApiAppsV1StatefulSet
+                to: StatefulSet
+              - from: IoK8sApiAppsV1StatefulSetList
+                to: StatefulSetList
+              - from: IoK8sApiCoreV1ReplicationController
+                to: ReplicationController
+              - from: IoK8sApiCoreV1ReplicationControllerList
+                to: ReplicationControllerList
+              - from: IoK8sApiAutoscalingV1HorizontalPodAutoscaler
+                to: HorizontalPodAutoscaler
+              - from: IoK8sApiAutoscalingV1HorizontalPodAutoscalerList
+                to: HorizontalPodAutoscalerList
+              - from: IoK8sApiBatchV1beta1CronJob
+                to: CronJob
+              - from: IoK8sApiBatchV1beta1CronJobList
+                to: CronJobList
+              - from: IoK8sApiBatchV1Job
+                to: Job
+              - from: IoK8sApiBatchV1JobList
+                to: JobList
+              - from: IoK8sApiRbacV1RoleBinding
+                to: RoleBinding
+              - from: IoK8sApiRbacV1RoleBindingList
+                to: RoleBindingList
+              - from: IoK8sApiRbacV1Role
+                to: Role
+              - from: IoK8sApiRbacV1RoleList
+                to: RoleList
+              - from: IoK8sApiCoreV1ServiceAccount
+                to: ServiceAccount
+              - from: IoK8sApiCoreV1ServiceAccountList
+                to: ServiceAccountList
+              - from: IoK8sApiCoreV1ResourceQuota
+                to: ResourceQuota
+              - from: IoK8sApiCoreV1ResourceQuotaList
+                to: ResourceQuotaList
+              - from: IoK8sApiCoreV1Endpoints
+                to: Endpoints
+              - from: IoK8sApiCoreV1EndpointsList
+                to: EndpointsList
+              - from: IoK8sApiAppsV1ControllerRevision
+                to: ControllerRevision
+              - from: IoK8sApiAppsV1ControllerRevisionList
+                to: ControllerRevisionList
+              - from: IoK8sApiNetworkingV1NetworkPolicy
+                to: NetworkPolicy
+              - from: IoK8sApiNetworkingV1NetworkPolicyList
+                to: NetworkPolicyList
+              - from: IoK8sApiPolicyV1beta1PodDisruptionBudget
+                to: PodDisruptionBudget
+              - from: IoK8sApiPolicyV1beta1PodDisruptionBudgetList
+                to: PodDisruptionBudgetList
+              - from: IoK8sApiCoreV1LimitRange
+                to: LimitRange
+              - from: IoK8sApiCoreV1LimitRangeList
+                to: LimitRangeList
+              - from: IoK8sApiCoreV1PodTemplate
+                to: PodTemplate
+              - from: IoK8sApiCoreV1PodTemplateList
+                to: PodTemplateList
+              - from: IoK8sApiCoreV1Event
+                to: Event
+              - from: IoK8sApiCoreV1EventList
+                to: EventList
+              - from: IoK8sApiCoreV1PersistentVolumeClaim
+                to: PersistentVolumeClaim
+              - from: IoK8sApiCoreV1PersistentVolumeClaimList
+                to: PersistentVolumeClaimList
+              - from: IoK8sApiCoreV1PersistentVolume
+                to: PersistentVolume
+              - from: IoK8sApiCoreV1PersistentVolumeList
+                to: PersistentVolumeList
+              - from: IoK8sApiCoreV1Secret
+                to: Secret
+              - from: IoK8sApiCoreV1SecretList
+                to: SecretList
+              - from: IoK8sApiCoreV1ConfigMap
+                to: ConfigMap
+              - from: IoK8sApiCoreV1ConfigMapList
+                to: ConfigMapList
+
     additionalTypeDefs: |
         interface K8sResourceInterface {
           kind: String
@@ -18,109 +185,109 @@ data:
           metadata: IoK8sApimachineryPkgApisMetaV1ObjectMeta
         }
         interface K8sNamespacedResourceInterface {
-          namespace: IoK8sApiCoreV1Namespace
+          namespace: Namespace
         }
         interface K8sEventOwnerInterface {
-          events: IoK8sApiCoreV1EventList
+          events: EventList
         }
-        extend type IoK8sApiCoreV1ConfigMap implements K8sResourceInterface
-        extend type IoK8sApiCoreV1PersistentVolumeClaim implements K8sResourceInterface
-        extend type IoK8sApiCoreV1Secret implements K8sResourceInterface
-        extend type IoK8sApiCoreV1Pod implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-          parent: IoK8sApiAppsV1ReplicaSet
-          connected: IoK8sApiCoreV1ServiceList
+        extend type ConfigMap implements K8sResourceInterface
+        extend type PersistentVolumeClaim implements K8sResourceInterface
+        extend type Secret implements K8sResourceInterface
+        extend type Pod implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+          parent: ReplicaSet
+          connected: ServiceList
           mounting: [K8sResourceInterface]
-          namespace: IoK8sApiCoreV1Namespace
-          events: IoK8sApiCoreV1EventList
+          namespace: Namespace
+          events: EventList
         }
-        extend type IoK8sApiAppsV1ReplicaSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-          parent: IoK8sApiAppsV1Deployment
-          children: IoK8sApiCoreV1PodList
-          namespace: IoK8sApiCoreV1Namespace
-          events: IoK8sApiCoreV1EventList
+        extend type ReplicaSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+          parent: Deployment
+          children: PodList
+          namespace: Namespace
+          events: EventList
         }
-        extend type IoK8sApiAppsV1Deployment implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-          children: IoK8sApiAppsV1ReplicaSetList
-          namespace: IoK8sApiCoreV1Namespace
-          events: IoK8sApiCoreV1EventList
+        extend type Deployment implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+          children: ReplicaSetList
+          namespace: Namespace
+          events: EventList
         }
-        extend type IoK8sApiCoreV1Service implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-          connecting: IoK8sApiCoreV1PodList
-          namespace: IoK8sApiCoreV1Namespace
-          events: IoK8sApiCoreV1EventList
+        extend type Service implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+          connecting: PodList
+          namespace: Namespace
+          events: EventList
         }
         extend type Query {
           # cluster-wide
-          nodes(name: String): IoK8sApiCoreV1NodeList
-          namespaces(name: String): IoK8sApiCoreV1NamespaceList
-          clusterrolebindings(name: String): IoK8sApiRbacV1ClusterRoleBindingList
-          clusterroles(name: String): IoK8sApiRbacV1ClusterRoleList
-          storageclasses(name: String): IoK8sApiStorageV1StorageClassList
-          mutatingwebhookconfigurations(name: String): IoK8sApiAdmissionregistrationV1MutatingWebhookConfigurationList
-          validatingwebhookconfigurations(name: String): IoK8sApiAdmissionregistrationV1ValidatingWebhookConfigurationList
-          certificatesigningrequests(name: String): IoK8sApiCertificatesV1beta1CertificateSigningRequestList
-          podsecuritypolicies(name: String): IoK8sApiPolicyV1beta1PodSecurityPolicyList
-          componentstatuses(name: String): IoK8sApiCoreV1ComponentStatusList
-          customresourcedefinitions(name: String): IoK8sApiextensionsApiserverPkgApisApiextensionsV1CustomResourceDefinitionList
-          priorityclasses(name: String): IoK8sApiSchedulingV1PriorityClassList
-          csidrivers(name: String): IoK8sApiStorageV1CSIDriverList
-          csinodes(name: String): IoK8sApiStorageV1CSINodeList
-          volumeattachments(name: String): IoK8sApiStorageV1VolumeAttachmentList
+          nodes(name: String): NodeList
+          namespaces(name: String): NamespaceList
+          clusterrolebindings(name: String): ClusterRoleBindingList
+          clusterroles(name: String): ClusterRoleList
+          storageclasses(name: String): StorageClassList
+          mutatingwebhookconfigurations(name: String): MutatingWebhookConfigurationList
+          validatingwebhookconfigurations(name: String): ValidatingWebhookConfigurationList
+          certificatesigningrequests(name: String): CertificateSigningRequestList
+          podsecuritypolicies(name: String): PodSecurityPolicyList
+          componentstatuses(name: String): ComponentStatusList
+          customresourcedefinitions(name: String): CustomResourceDefinitionList
+          priorityclasses(name: String): PriorityClassList
+          csidrivers(name: String): CSIDriverList
+          csinodes(name: String): CSINodeList
+          volumeattachments(name: String): VolumeAttachmentList
           # namespaced
-          pods(namespace: String!, name: String): IoK8sApiCoreV1PodList
-          services(namespace: String!, name: String): IoK8sApiCoreV1ServiceList
-          ingresses(namespace: String!, name: String): IoK8sApiNetworkingV1beta1IngressClassList
-          replicasets(namespace: String!, name: String): IoK8sApiAppsV1ReplicaSetList
-          deployments(namespace: String!, name: String): IoK8sApiAppsV1Deployment
-          daemonsets(namespace: String!, name: String): IoK8sApiAppsV1DaemonSetList
-          statefulsets(namespace: String!, name: String): IoK8sApiAppsV1StatefulSetList
-          replicationcontrollers(namespace: String!, name: String): IoK8sApiCoreV1ReplicationControllerList
-          horizontalpodautoscalers(namespace: String!, name: String): IoK8sApiAutoscalingV1HorizontalPodAutoscalerList
-          cronjobs(namespace: String!, name: String): IoK8sApiBatchV1beta1CronJobList
-          jobs(namespace: String!, name: String): IoK8sApiBatchV1JobList
-          rolebindings(namespace: String!, name: String): IoK8sApiRbacV1RoleBindingList
-          roles(namespace: String!, name: String): IoK8sApiRbacV1RoleList
-          serviceaccounts(namespace: String!, name: String): IoK8sApiCoreV1ServiceAccountList
-          resourcequotas(namespace: String!, name: String): IoK8sApiCoreV1ResourceQuotaList
-          endpoints(namespace: String!, name: String): IoK8sApiCoreV1EndpointsList
-          controllerrevisions(namespace: String!, name: String): IoK8sApiAppsV1ControllerRevisionList
-          networkpolicies(namespace: String!, name: String): IoK8sApiNetworkingV1NetworkPolicyList
-          poddisruptionbudgets(namespace: String!, name: String): IoK8sApiPolicyV1beta1PodDisruptionBudgetList
-          limitranges(namespace: String!, name: String): IoK8sApiCoreV1LimitRangeList
-          podtemplates(namespace: String!, name: String): IoK8sApiCoreV1PodTemplateList
-          events(namespace: String!, name: String): IoK8sApiCoreV1EventList
-          persistentvolumeclaims(namespace: String!, name: String): IoK8sApiCoreV1PersistentVolumeClaimList
-          persistentvolumes(namespace: String!, name: String): IoK8sApiCoreV1PersistentVolumeList
-          secrets(namespace: String!, name: String): IoK8sApiCoreV1SecretList
-          configmaps(namespace: String!, name: String): IoK8sApiCoreV1ConfigMapList
-          no(name: String): IoK8sApiCoreV1NodeList
-          ns(name: String): IoK8sApiCoreV1NamespaceList
-          sc(name: String): IoK8sApiStorageV1StorageClassList
-          csr(name: String): IoK8sApiCertificatesV1beta1CertificateSigningRequestList
-          psp(name: String): IoK8sApiPolicyV1beta1PodSecurityPolicyList
-          cs(name: String): IoK8sApiCoreV1ComponentStatusList
-          crd(name: String): IoK8sApiextensionsApiserverPkgApisApiextensionsV1CustomResourceDefinitionList
-          pc(name: String): IoK8sApiSchedulingV1PriorityClassList
-          po(namespace: String!, name: String): IoK8sApiCoreV1PodList
-          svc(namespace: String!, name: String): IoK8sApiCoreV1ServiceList
-          rs(namespace: String!, name: String): IoK8sApiAppsV1ReplicaSetList
-          deploy(namespace: String!, name: String): IoK8sApiAppsV1DeploymentList
-          pvc(namespace: String!, name: String): IoK8sApiCoreV1PersistentVolumeClaimList
-          pv(namespace: String!, name: String): IoK8sApiCoreV1PersistentVolumeList
-          ing(namespace: String!, name: String): IoK8sApiNetworkingV1beta1IngressClassList
-          ds(namespace: String!, name: String): IoK8sApiAppsV1DaemonSetList
-          sts(namespace: String!, name: String): IoK8sApiAppsV1StatefulSetList
-          rc(namespace: String!, name: String): IoK8sApiCoreV1ReplicationControllerList
-          hpa(namespace: String!, name: String): IoK8sApiAutoscalingV1HorizontalPodAutoscalerList
-          cj(namespace: String!, name: String): IoK8sApiBatchV1beta1CronJobList
-          sa(namespace: String!, name: String): IoK8sApiCoreV1ServiceAccountList
-          quota(namespace: String!, name: String): IoK8sApiCoreV1ResourceQuotaList
-          ep(namespace: String!, name: String): IoK8sApiCoreV1EndpointsList
-          netpol(namespace: String!, name: String): IoK8sApiNetworkingV1NetworkPolicyList
-          pdb(namespace: String!, name: String): IoK8sApiPolicyV1beta1PodDisruptionBudgetList
-          limits(namespace: String!, name: String): IoK8sApiCoreV1LimitRangeList
-          ev(namespace: String!, name: String): IoK8sApiCoreV1EventList
-          cm(namespace: String!, name: String): IoK8sApiCoreV1ConfigMapList
+          pods(namespace: String!, name: String): PodList
+          services(namespace: String!, name: String): ServiceList
+          ingresses(namespace: String!, name: String): IngressList
+          replicasets(namespace: String!, name: String): ReplicaSetList
+          deployments(namespace: String!, name: String): DeploymentList
+          daemonsets(namespace: String!, name: String): DaemonSetList
+          statefulsets(namespace: String!, name: String): StatefulSetList
+          replicationcontrollers(namespace: String!, name: String): ReplicationControllerList
+          horizontalpodautoscalers(namespace: String!, name: String): HorizontalPodAutoscalerList
+          cronjobs(namespace: String!, name: String): CronJobList
+          jobs(namespace: String!, name: String): JobList
+          rolebindings(namespace: String!, name: String): RoleBindingList
+          roles(namespace: String!, name: String): RoleList
+          serviceaccounts(namespace: String!, name: String): ServiceAccountList
+          resourcequotas(namespace: String!, name: String): ResourceQuotaList
+          endpoints(namespace: String!, name: String): EndpointsList
+          controllerrevisions(namespace: String!, name: String): ControllerRevisionList
+          networkpolicies(namespace: String!, name: String): NetworkPolicyList
+          poddisruptionbudgets(namespace: String!, name: String): PodDisruptionBudgetList
+          limitranges(namespace: String!, name: String): LimitRangeList
+          podtemplates(namespace: String!, name: String): PodTemplateList
+          events(namespace: String!, name: String): EventList
+          persistentvolumeclaims(namespace: String!, name: String): PersistentVolumeClaimList
+          persistentvolumes(namespace: String!, name: String): PersistentVolumeList
+          secrets(namespace: String!, name: String): SecretList
+          configmaps(namespace: String!, name: String): ConfigMapList
+          no(name: String): NodeList
+          ns(name: String): NamespaceList
+          sc(name: String): StorageClassList
+          csr(name: String): CertificateSigningRequestList
+          psp(name: String): PodSecurityPolicyList
+          cs(name: String): ComponentStatusList
+          crd(name: String): CustomResourceDefinitionList
+          pc(name: String): PriorityClassList
+          po(namespace: String!, name: String): PodList
+          svc(namespace: String!, name: String): ServiceList
+          rs(namespace: String!, name: String): ReplicaSetList
+          deploy(namespace: String!, name: String): DeploymentList
+          pvc(namespace: String!, name: String): PersistentVolumeClaimList
+          pv(namespace: String!, name: String): PersistentVolumeList
+          ing(namespace: String!, name: String): IngressList
+          ds(namespace: String!, name: String): DaemonSetList
+          sts(namespace: String!, name: String): StatefulSetList
+          rc(namespace: String!, name: String): ReplicationControllerList
+          hpa(namespace: String!, name: String): HorizontalPodAutoscalerList
+          cj(namespace: String!, name: String): CronJobList
+          sa(namespace: String!, name: String): ServiceAccountList
+          quota(namespace: String!, name: String): ResourceQuotaList
+          ep(namespace: String!, name: String): EndpointsList
+          netpol(namespace: String!, name: String): NetworkPolicyList
+          pdb(namespace: String!, name: String): PodDisruptionBudgetList
+          limits(namespace: String!, name: String): LimitRangeList
+          ev(namespace: String!, name: String): EventList
+          cm(namespace: String!, name: String): ConfigMapList
         }
     additionalResolvers:
       - ./additional-resolvers.js
@@ -180,10 +347,10 @@ data:
       priorityclasses: "SchedulingV1PriorityClass",
       csidrivers: "StorageV1CSIDriver",
       csinodes: "StorageV1CSINode",
-      volumeattachments: "IoK8sApiStorageV1VolumeAttachment",
+      volumeattachments: "VolumeAttachment",
       pods: "CoreV1NamespacedPod",
       services: "CoreV1NamespacedService",
-      ingresses: "NetworkingV1beta1IngressClass",
+      ingresses: "NetworkingV1beta1NamespacedIngress",
       replicasets: "AppsV1NamespacedReplicaSet",
       deployments: "AppsV1NamespacedDeployment",
       statefulsets: "AppsV1NamespacedStatefulSet",
@@ -411,7 +578,7 @@ data:
     }
 
     const resolvers = {
-      IoK8sApiCoreV1Pod: {
+      Pod: {
         parent: createParentResolver("readAppsV1NamespacedReplicaSet"),
         connected: createConnectedResolver("listCoreV1NamespacedService"),
         mounting: createMountingResolver(),
@@ -419,18 +586,18 @@ data:
         events: createEventResolver()
 
       },
-      IoK8sApiAppsV1ReplicaSet: {
+      ReplicaSet: {
         parent: createParentResolver("readAppsV1NamespacedDeployment"),
         children: createChildrenResolver("listCoreV1NamespacedPod"),
         namespace: createNamespaceResolver(),
         events: createEventResolver()
       },
-      IoK8sApiAppsV1Deployment: {
+      Deployment: {
         children: createChildrenResolver("listAppsV1NamespacedReplicaSet"),
         namespace: createNamespaceResolver(),
         events: createEventResolver()
       },
-      IoK8sApiCoreV1Service: {
+      Service: {
         connecting: createConnectingResolver("listCoreV1NamespacedPod"),
         namespace: createNamespaceResolver(),
         events: createEventResolver()
@@ -438,15 +605,15 @@ data:
       K8sResourceInterface: {
         __resolveType(obj, context, info){
           if(obj.kind == "ConfigMap"){
-            return 'IoK8sApiCoreV1ConfigMap';
+            return 'ConfigMap';
           }
     
           if(obj.kind == "persistentVolumeClaim"){
-            return 'IoK8sApiCoreV1PersistentVolumeClaim';
+            return 'PersistentVolumeClaim';
           }
     
           if(obj.kind == "Secret"){
-            return 'IoK8sApiCoreV1Secret';
+            return 'Secret';
           }
           return null;
         }
