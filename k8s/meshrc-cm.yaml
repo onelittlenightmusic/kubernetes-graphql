@@ -140,9 +140,6 @@ data:
               items {
                 metadata {
                   name
-                  ownerReferences {
-                    name
-                  }
                 }
               }
             }
@@ -151,17 +148,6 @@ data:
             items {
               metadata {
                 name
-              }
-              spec {
-                selector
-              }
-              connecting {
-                items {
-                  metadata {
-                    name
-                    labels
-                  }
-                }
               }
             }
           }
