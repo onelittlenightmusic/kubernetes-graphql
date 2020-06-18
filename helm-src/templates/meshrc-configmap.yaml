@@ -218,76 +218,76 @@ data:
         }
         extend type Query {
           # cluster-wide
-          nodes(name: String): NodeList
-          namespaces(name: String): NamespaceList
-          clusterrolebindings(name: String): ClusterRoleBindingList
-          clusterroles(name: String): ClusterRoleList
-          storageclasses(name: String): StorageClassList
-          mutatingwebhookconfigurations(name: String): MutatingWebhookConfigurationList
-          validatingwebhookconfigurations(name: String): ValidatingWebhookConfigurationList
-          certificatesigningrequests(name: String): CertificateSigningRequestList
-          podsecuritypolicies(name: String): PodSecurityPolicyList
-          componentstatuses(name: String): ComponentStatusList
-          customresourcedefinitions(name: String): CustomResourceDefinitionList
-          priorityclasses(name: String): PriorityClassList
-          csidrivers(name: String): CSIDriverList
-          csinodes(name: String): CSINodeList
-          volumeattachments(name: String): VolumeAttachmentList
+          nodes(name: String, limit: Int, labelSelector: String): NodeList
+          namespaces(name: String, limit: Int, labelSelector: String): NamespaceList
+          clusterrolebindings(name: String, limit: Int, labelSelector: String): ClusterRoleBindingList
+          clusterroles(name: String, limit: Int, labelSelector: String): ClusterRoleList
+          storageclasses(name: String, limit: Int, labelSelector: String): StorageClassList
+          mutatingwebhookconfigurations(name: String, limit: Int, labelSelector: String): MutatingWebhookConfigurationList
+          validatingwebhookconfigurations(name: String, limit: Int, labelSelector: String): ValidatingWebhookConfigurationList
+          certificatesigningrequests(name: String, limit: Int, labelSelector: String): CertificateSigningRequestList
+          podsecuritypolicies(name: String, limit: Int, labelSelector: String): PodSecurityPolicyList
+          componentstatuses(name: String, limit: Int, labelSelector: String): ComponentStatusList
+          customresourcedefinitions(name: String, limit: Int, labelSelector: String): CustomResourceDefinitionList
+          priorityclasses(name: String, limit: Int, labelSelector: String): PriorityClassList
+          csidrivers(name: String, limit: Int, labelSelector: String): CSIDriverList
+          csinodes(name: String, limit: Int, labelSelector: String): CSINodeList
+          volumeattachments(name: String, limit: Int, labelSelector: String): VolumeAttachmentList
           # namespaced
-          pods(namespace: String!, name: String): PodList
-          services(namespace: String!, name: String): ServiceList
-          ingresses(namespace: String!, name: String): IngressList
-          replicasets(namespace: String!, name: String): ReplicaSetList
-          deployments(namespace: String!, name: String): DeploymentList
-          daemonsets(namespace: String!, name: String): DaemonSetList
-          statefulsets(namespace: String!, name: String): StatefulSetList
-          replicationcontrollers(namespace: String!, name: String): ReplicationControllerList
-          horizontalpodautoscalers(namespace: String!, name: String): HorizontalPodAutoscalerList
-          cronjobs(namespace: String!, name: String): CronJobList
-          jobs(namespace: String!, name: String): JobList
-          rolebindings(namespace: String!, name: String): RoleBindingList
-          roles(namespace: String!, name: String): RoleList
-          serviceaccounts(namespace: String!, name: String): ServiceAccountList
-          resourcequotas(namespace: String!, name: String): ResourceQuotaList
-          endpoints(namespace: String!, name: String): EndpointsList
-          controllerrevisions(namespace: String!, name: String): ControllerRevisionList
-          networkpolicies(namespace: String!, name: String): NetworkPolicyList
-          poddisruptionbudgets(namespace: String!, name: String): PodDisruptionBudgetList
-          limitranges(namespace: String!, name: String): LimitRangeList
-          podtemplates(namespace: String!, name: String): PodTemplateList
-          events(namespace: String!, name: String): EventList
-          persistentvolumeclaims(namespace: String!, name: String): PersistentVolumeClaimList
-          persistentvolumes(namespace: String!, name: String): PersistentVolumeList
-          secrets(namespace: String!, name: String): SecretList
-          configmaps(namespace: String!, name: String): ConfigMapList
-          no(name: String): NodeList
-          ns(name: String): NamespaceList
-          sc(name: String): StorageClassList
-          csr(name: String): CertificateSigningRequestList
-          psp(name: String): PodSecurityPolicyList
-          cs(name: String): ComponentStatusList
-          crd(name: String): CustomResourceDefinitionList
-          pc(name: String): PriorityClassList
-          po(namespace: String!, name: String): PodList
-          svc(namespace: String!, name: String): ServiceList
-          rs(namespace: String!, name: String): ReplicaSetList
-          deploy(namespace: String!, name: String): DeploymentList
-          pvc(namespace: String!, name: String): PersistentVolumeClaimList
-          pv(namespace: String!, name: String): PersistentVolumeList
-          ing(namespace: String!, name: String): IngressList
-          ds(namespace: String!, name: String): DaemonSetList
-          sts(namespace: String!, name: String): StatefulSetList
-          rc(namespace: String!, name: String): ReplicationControllerList
-          hpa(namespace: String!, name: String): HorizontalPodAutoscalerList
-          cj(namespace: String!, name: String): CronJobList
-          sa(namespace: String!, name: String): ServiceAccountList
-          quota(namespace: String!, name: String): ResourceQuotaList
-          ep(namespace: String!, name: String): EndpointsList
-          netpol(namespace: String!, name: String): NetworkPolicyList
-          pdb(namespace: String!, name: String): PodDisruptionBudgetList
-          limits(namespace: String!, name: String): LimitRangeList
-          ev(namespace: String!, name: String): EventList
-          cm(namespace: String!, name: String): ConfigMapList
+          pods(namespace: String!, name: String, limit: Int, labelSelector: String): PodList
+          services(namespace: String!, name: String, limit: Int, labelSelector: String): ServiceList
+          ingresses(namespace: String!, name: String, limit: Int, labelSelector: String): IngressList
+          replicasets(namespace: String!, name: String, limit: Int, labelSelector: String): ReplicaSetList
+          deployments(namespace: String!, name: String, limit: Int, labelSelector: String): DeploymentList
+          daemonsets(namespace: String!, name: String, limit: Int, labelSelector: String): DaemonSetList
+          statefulsets(namespace: String!, name: String, limit: Int, labelSelector: String): StatefulSetList
+          replicationcontrollers(namespace: String!, name: String, limit: Int, labelSelector: String): ReplicationControllerList
+          horizontalpodautoscalers(namespace: String!, name: String, limit: Int, labelSelector: String): HorizontalPodAutoscalerList
+          cronjobs(namespace: String!, name: String, limit: Int, labelSelector: String): CronJobList
+          jobs(namespace: String!, name: String, limit: Int, labelSelector: String): JobList
+          rolebindings(namespace: String!, name: String, limit: Int, labelSelector: String): RoleBindingList
+          roles(namespace: String!, name: String, limit: Int, labelSelector: String): RoleList
+          serviceaccounts(namespace: String!, name: String, limit: Int, labelSelector: String): ServiceAccountList
+          resourcequotas(namespace: String!, name: String, limit: Int, labelSelector: String): ResourceQuotaList
+          endpoints(namespace: String!, name: String, limit: Int, labelSelector: String): EndpointsList
+          controllerrevisions(namespace: String!, name: String, limit: Int, labelSelector: String): ControllerRevisionList
+          networkpolicies(namespace: String!, name: String, limit: Int, labelSelector: String): NetworkPolicyList
+          poddisruptionbudgets(namespace: String!, name: String, limit: Int, labelSelector: String): PodDisruptionBudgetList
+          limitranges(namespace: String!, name: String, limit: Int, labelSelector: String): LimitRangeList
+          podtemplates(namespace: String!, name: String, limit: Int, labelSelector: String): PodTemplateList
+          events(namespace: String!, name: String, limit: Int, labelSelector: String): EventList
+          persistentvolumeclaims(namespace: String!, name: String, limit: Int, labelSelector: String): PersistentVolumeClaimList
+          persistentvolumes(namespace: String!, name: String, limit: Int, labelSelector: String): PersistentVolumeList
+          secrets(namespace: String!, name: String, limit: Int, labelSelector: String): SecretList
+          configmaps(namespace: String!, name: String, limit: Int, labelSelector: String): ConfigMapList
+          no(name: String, limit: Int, labelSelector: String): NodeList
+          ns(name: String, limit: Int, labelSelector: String): NamespaceList
+          sc(name: String, limit: Int, labelSelector: String): StorageClassList
+          csr(name: String, limit: Int, labelSelector: String): CertificateSigningRequestList
+          psp(name: String, limit: Int, labelSelector: String): PodSecurityPolicyList
+          cs(name: String, limit: Int, labelSelector: String): ComponentStatusList
+          crd(name: String, limit: Int, labelSelector: String): CustomResourceDefinitionList
+          pc(name: String, limit: Int, labelSelector: String): PriorityClassList
+          po(namespace: String!, name: String, limit: Int, labelSelector: String): PodList
+          svc(namespace: String!, name: String, limit: Int, labelSelector: String): ServiceList
+          rs(namespace: String!, name: String, limit: Int, labelSelector: String): ReplicaSetList
+          deploy(namespace: String!, name: String, limit: Int, labelSelector: String): DeploymentList
+          pvc(namespace: String!, name: String, limit: Int, labelSelector: String): PersistentVolumeClaimList
+          pv(namespace: String!, name: String, limit: Int, labelSelector: String): PersistentVolumeList
+          ing(namespace: String!, name: String, limit: Int, labelSelector: String): IngressList
+          ds(namespace: String!, name: String, limit: Int, labelSelector: String): DaemonSetList
+          sts(namespace: String!, name: String, limit: Int, labelSelector: String): StatefulSetList
+          rc(namespace: String!, name: String, limit: Int, labelSelector: String): ReplicationControllerList
+          hpa(namespace: String!, name: String, limit: Int, labelSelector: String): HorizontalPodAutoscalerList
+          cj(namespace: String!, name: String, limit: Int, labelSelector: String): CronJobList
+          sa(namespace: String!, name: String, limit: Int, labelSelector: String): ServiceAccountList
+          quota(namespace: String!, name: String, limit: Int, labelSelector: String): ResourceQuotaList
+          ep(namespace: String!, name: String, limit: Int, labelSelector: String): EndpointsList
+          netpol(namespace: String!, name: String, limit: Int, labelSelector: String): NetworkPolicyList
+          pdb(namespace: String!, name: String, limit: Int, labelSelector: String): PodDisruptionBudgetList
+          limits(namespace: String!, name: String, limit: Int, labelSelector: String): LimitRangeList
+          ev(namespace: String!, name: String, limit: Int, labelSelector: String): EventList
+          cm(namespace: String!, name: String, limit: Int, labelSelector: String): ConfigMapList
         }
     additionalResolvers:
       - ./additional-resolvers.js
