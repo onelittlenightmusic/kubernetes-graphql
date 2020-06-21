@@ -1,0 +1,19 @@
+version: "3.7"
+services:
+  proxy:
+    image: nginx
+    ports:
+    - "80"
+    volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    - /var/run/docker.sock:/var/run/docker.sock:rw
+    - ./chmod.sh:/docker-entrypoint.d/chmod.sh:rw
+  mesh-svc:
+    image: hiroyukiosaki/graphql-mesh:v0.2.11-all
+    ports:
+    - "4000:4000"
+    volumes:
+    - ./src/.meshrc.yaml:/work/.meshrc.yaml
+    - ./src/example-query.graphql:/work/example-query.graphql
+    - ./src/init.sh:/work/init.sh
+    - ./src/additional-resolvers.js:/work/additional-resolvers.js

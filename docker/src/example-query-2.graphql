@@ -1,0 +1,9 @@
+query {
+	containerList{
+    names
+    ports {
+      privatePort
+      publicPort
+    }
+  }
+}

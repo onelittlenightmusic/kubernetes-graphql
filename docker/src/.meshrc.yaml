@@ -1,0 +1,12 @@
+sources:
+  - name: graphqlMeshK8s
+    handler:
+      openapi:
+        source: /work/swagger.yaml
+        baseUrl: http://proxy/
+        skipSchemaValidation: true
+
+additionalTypeDefs: |
+
+additionalResolvers:
+  - ./additional-resolvers.js
