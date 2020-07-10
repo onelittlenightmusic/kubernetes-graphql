@@ -188,13 +188,16 @@ data:
         interface K8sEventOwnerInterface {
           events: EventList
         }
+        extend type Node implements K8sResourceInterface
         extend type ConfigMap implements K8sResourceInterface
         extend type PersistentVolumeClaim implements K8sResourceInterface
         extend type Secret implements K8sResourceInterface
+        union K8sMounted = ConfigMap | PersistentVolume | Secret
+        union K8sPodParent = ReplicaSet | DaemonSet | StatefulSet | Node
         extend type Pod implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-          parent: ReplicaSet
+          parent: K8sPodParent
           connected: ServiceList
-          mounting: [K8sResourceInterface]
+          mounting: [K8sMounted]
           namespace: Namespace
           events: EventList
         }
@@ -362,7 +365,7 @@ data:
       serviceaccounts: "CoreV1NamespacedServiceAccount",
       resourcequotas: "CoreV1NamespacedResourceQuota",
       endpoints: "CoreV1NamespacedEndpoints",
-      controllerrevisions: "CoreV1NamespacedEndpoints",
+      controllerrevisions: "AppsV1ControllerRevisionList",
       networkpolicies: "NetworkingV1NamespacedNetworkPolicy",
       poddisruptionbudgets: "PolicyV1beta1NamespacedPodDisruptionBudget",
       limitranges: "CoreV1NamespacedLimitRange",
@@ -405,7 +408,55 @@ data:
       configmaps: "cm"
     };
 
-    const createParentResolver = (readfn) => {
+    const kindmap = {
+      Node: "nodes",
+      Namespace: "namespaces",
+      ClusterRoleBinding: "clusterrolebindings",
+      "ClusterRole": "clusterroles",
+      StorageClass: "storageclasses",
+      MutatingWebhookConfiguration: "mutatingwebhookconfigurations",
+      ValidatingWebhookConfiguration: "validatingwebhookconfigurations",
+      CertificateSigningRequest: "certificatesigningrequests",
+      PodSecurityPolicy: "podsecuritypolicies",
+      ComponentStatus: "componentstatuses",
+      CustomResourceDefinition: "customresourcedefinitions",
+      PriorityClass: "priorityclasses",
+      CSIDriver: "csidrivers",
+      CSINode: "csinodes",
+      VolumeAttachment: "volumeattachments",
+      NamespacedPod: "pods",
+      Service: "services",
+      Ingress: "ingresses",
+      ReplicaSet: "replicasets",
+      Deployment: "deployments",
+      StatefulSet: "statefulsets",
+      DaemonSet: "daemonsets",
+      ReplicationController: "replicationcontrollers",
+      HorizontalPodAutoscale: "horizontalpodautoscalers",
+      CronJob: "cronjobs",
+      Job: "jobs",
+      RoleBinding: "rolebindings",
+      Role: "roles",
+      ServiceAccount: "serviceaccounts",
+      ResourceQuota: "resourcequotas",
+      Endpoints: "endpoints",
+      ControllerRevisionList: "controllerrevisions",
+      NetworkPolicy: "networkpolicies",
+      PodDisruptionBudget: "poddisruptionbudgets",
+      LimitRange: "limitranges",
+      PodTemplate: "podtemplates",
+      Event: "events",
+      PersistentVolumeClaim: "persistentvolumeclaims",
+      PersistentVolume: "persistentvolumes", 
+      Secret: "secrets",
+      ConfigMap: "configmaps"
+    }
+
+    const getListFuncName = resource => "list"+resources[resource];
+    const getReadFuncName = resource => "read"+resources[resource];
+    const getReadFuncNameFromKind = kind => getReadFuncName(kindmap[kind]);
+
+    const createParentResolver = (resourcelist) => {
       var resolve = async (obj, args, {graphqlMeshK8s}, info) => {
         console.log("createParentResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
@@ -414,14 +465,16 @@ data:
           return null;
         }
         var name = ownerReferences[0].name;
+        const kind = ownerReferences[0].kind;
+        const readfn = getReadFuncNameFromKind(kind);
         var _function = graphqlMeshK8s.api[readfn];
         var values = await _function({ name, namespace });
         return values;
       };
-      var selectionSet = `{ metadata { name namespace ownerReferences { name }}}`;
+      var selectionSet = `{ metadata { name namespace ownerReferences { name kind }}}`;
       return { resolve, selectionSet };
     }
-    const createChildrenResolver = (listfn) => {
+    const createChildrenResolver = (resource) => {
       var resolve = async (obj, args, {graphqlMeshK8s}, info) => {
         console.log("createChildrenResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
@@ -433,6 +486,8 @@ data:
         var resolverRequirements = { items: {metadata: { labels: true, ownerReferences: {name: true}}}};
         var mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
         //console.log(JSON.stringify(mergedFields));
+
+        const listfn = getListFuncName(resource);
         var _function = graphqlMeshK8s.api[listfn];
         var list = await _function({ namespace }, mergedFields);
         console.log("children base", JSON.stringify(list.items));
@@ -450,7 +505,7 @@ data:
       var selectionSet = `{ metadata {name namespace}}`;
       return { resolve, selectionSet };
     }
-    const createConnectingResolver = (listfn) => {
+    const createConnectingResolver = (resource) => {
       var resolve = async (obj, args, { graphqlMeshK8s }, info) => {
         console.log("createConnectingResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
@@ -459,6 +514,8 @@ data:
           console.log("createConnectingResolver FAILED: ", "selector", selector, "namespace", namespace);
           return { items: [] };
         }
+
+        const listfn = getListFuncName(resource);
         var _function = graphqlMeshK8s.api[listfn];
         //var labelSelector = Object.keys(selector).map(key => key+"="+selector[key]).join(",");
         var resolverRequirements = { items: { metadata: {labels: true}}};
@@ -479,7 +536,7 @@ data:
       var selectionSet = `{ metadata { name namespace } spec {selector} }`;
       return { resolve, selectionSet };
     }
-    const createConnectedResolver = (listfn) => {
+    const createConnectedResolver = (resource) => {
       var resolve = async (obj, args, { graphqlMeshK8s }, info) => {
         console.log("createConnectedResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
@@ -487,6 +544,8 @@ data:
         if((!labels) || (!namespace)) {
           return { items: [] };
         }
+
+        const listfn = getListFuncName(resource);
         var _function = graphqlMeshK8s.api[listfn];
         var resolverRequirements = { items: {spec: {selector: true }}};
         var mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
@@ -524,7 +583,7 @@ data:
           } else if(elem.secret) {
             return graphqlMeshK8s.api.readCoreV1NamespacedSecret({name: elem.secret.secretName, namespace});
           }
-        });
+        }).filter(elem => elem != null);
         return await Promise.all(promises);
       };
       var selectionSet = `{ metadata { name namespace } spec {volumes {configMap {name} persistentVolumeClaim {claimName} secret {secretName}}}}`;
@@ -566,6 +625,7 @@ data:
       var selectionSet = `{ metadata { namespace }}`;
       return { resolve, selectionSet };
     }
+
     const createRootResolver = (listfn, readfn) => {
       return async (obj, args, { graphqlMeshK8s }) => {
         if('name' in args) {
@@ -577,41 +637,61 @@ data:
 
     const resolvers = {
       Pod: {
-        parent: createParentResolver("readAppsV1NamespacedReplicaSet"),
-        connected: createConnectedResolver("listCoreV1NamespacedService"),
+        parent: createParentResolver("replicasets"),
+        connected: createConnectedResolver("services"),
         mounting: createMountingResolver(),
         namespace: createNamespaceResolver(),
         events: createEventResolver()
 
       },
       ReplicaSet: {
-        parent: createParentResolver("readAppsV1NamespacedDeployment"),
-        children: createChildrenResolver("listCoreV1NamespacedPod"),
+        parent: createParentResolver("deployments"),
+        children: createChildrenResolver("pods"),
         namespace: createNamespaceResolver(),
         events: createEventResolver()
       },
       Deployment: {
-        children: createChildrenResolver("listAppsV1NamespacedReplicaSet"),
+        children: createChildrenResolver("replicasets"),
         namespace: createNamespaceResolver(),
         events: createEventResolver()
       },
       Service: {
-        connecting: createConnectingResolver("listCoreV1NamespacedPod"),
+        connecting: createConnectingResolver("pods"),
         namespace: createNamespaceResolver(),
         events: createEventResolver()
       },
-      K8sResourceInterface: {
+      K8sMounted: {
         __resolveType(obj, context, info){
           if(obj.kind == "ConfigMap"){
             return 'ConfigMap';
           }
-    
-          if(obj.kind == "persistentVolumeClaim"){
+
+          if(obj.kind == "PersistentVolumeClaim"){
             return 'PersistentVolumeClaim';
           }
-    
+
           if(obj.kind == "Secret"){
             return 'Secret';
+          }
+          return null;
+        }
+      },
+      K8sPodParent: {
+        __resolveType(obj, context, info){
+          if(obj.kind == "ReplicaSet"){
+            return 'ReplicaSet';
+          }
+
+          if(obj.kind == "DaemonSet"){
+            return 'DaemonSet';
+          }
+
+          if(obj.kind == "StatefulSet"){
+            return 'StatefulSet';
+          }
+
+          if(obj.kind == "Node"){
+            return 'Node';
           }
           return null;
         }
@@ -619,7 +699,7 @@ data:
     };
     var addonQueryResolver = {};
     for(resource in resources) {
-      addonQueryResolver[resource] = createRootResolver("list"+resources[resource], "read"+resources[resource]);
+      addonQueryResolver[resource] = createRootResolver(getListFuncName(resource), getReadFuncName(resource));
     }
     for(key in abbreviations) {
       addonQueryResolver[abbreviations[key]] = createRootResolver("list"+resources[key], "read"+resources[key]);
