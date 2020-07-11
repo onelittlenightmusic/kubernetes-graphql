@@ -8,7 +8,7 @@ graphql-mesh:
     additional-resolvers.js: meshrc
   image:
   #   pullPolicy: Always
-    tag: "v0.2.11-all"
+    tag: "v0.2.13-all"
   ingress:
     enabled: true
     # annotations:

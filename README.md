@@ -8,8 +8,9 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
 
 - [GraphQL endpoint of Kubernetes API & Docker; dynamically created by GraphQL Mesh](#graphql-endpoint-of-kubernetes-api--docker-dynamically-created-by-graphql-mesh)
 - [Advantage of GraphQL](#advantage-of-graphql)
+  - [Query. list pods](#query-list-pods)
+  - [Interactive visualiation by Postman](#interactive-visualiation-by-postman)
 - [Query example (Kubernetes)](#query-example-kubernetes)
-  - [Example 1. list pods](#example-1-list-pods)
   - [Example 2: get pods with labels](#example-2-get-pods-with-labels)
   - [Example 2-2. get single pod with name](#example-2-2-get-single-pod-with-name)
   - [Example 3-1. `parent`/`children`, `connected`/`connecting`](#example-3-1-parentchildren-connectedconnecting)
@@ -40,9 +41,8 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
 - Completion or validation of query
   - When you edit your query with GraphQL playground or Graphiql, they have powerful completion function which enables you to easily construct query without remembering exact field name etc.
 
-# Query example (Kubernetes)
 
-  ## Example 1. list pods
+  ## Query. list pods
 
   ```sh
   kubectl get pods --namespace default -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.startTime}{"\n"}{end}'
@@ -50,7 +50,7 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
 
   ```graphql
   {
-    # pods or po
+    # pods or pos
     pods(namespace: "default") {
       items {
         metadata {
@@ -64,9 +64,17 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
   }
   ```
 
-  Example: Pod listing
-
   ![](img/screen.png)
+
+  ## Interactive visualiation by Postman
+
+  Resource relation is visualized as tree form. Please refer to [graphql-treeview](./graphql-greeview).
+
+  ![](graphql-treeview/img/2020-07-10-01-37-33.png)
+
+# Query example (Kubernetes)
+
+
 
   ## Example 2: get pods with labels
 
@@ -76,7 +84,7 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
 
   ```graphql
   {
-    # pods or po
+    # pods or pos
   	pods(
       namespace: "default", 
       labelSelector: "run=mesh"
@@ -99,16 +107,14 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
 
   ```graphql
   {
-    # pods or po
-  	pods(
+    # pod or po
+    pod(
       name: "mesh"
       namespace: "default", 
     ) {
-      items {
-        metadata {
-          name
-          namespace
-        }
+      metadata {
+        name
+        namespace
       }
     }
   }
@@ -119,19 +125,20 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
   These are original fields. Please refer to [Original resolvers](#original-resolvers).
 
   ```graphql
-    query q {
-      pods(namespace: "default") {
-        items {
-          metadata {
-            name
-          }
-          parent { # ReplicaSets (Pod's parent)
-            parent { # Deployments (ReplicaSet's parent)
-              metadata {
-                name
-              }
+  query q {
+    pods(namespace: "default") {
+      items {
+        metadata {
+          name
+        }
+        parent {
+          # ReplicaSets (Pod's parent)
+          ... on ReplicaSet {
+            metadata {
+              name
             }
-            children { # Pods (ReplicaSet's children)
+            children {
+              # Pods (ReplicaSet's children)
               items {
                 metadata {
                   name
@@ -139,16 +146,18 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
               }
             }
           }
-          connected { # Services (Pod's connected resources)
-            items {
-              metadata {
-                name
-              }
-              connecting { # Pods (Service's connecting targets)
-                items {
-                  metadata {
-                    name
-                  }
+        }
+        connected {
+          # Services (Pod's connected resources)
+          items {
+            metadata {
+              name
+            }
+            connecting {
+              # Pods (Service's connecting targets)
+              items {
+                metadata {
+                  name
                 }
               }
             }
@@ -156,6 +165,8 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
         }
       }
     }
+  }
+
   ```
 
   ## Example 3-2. Debugging with `events`
@@ -170,7 +181,7 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
 
   ```graphql
   query {
-    po(namespace: "default") { # Pod
+    pods(namespace: "default") { # Pod
       items {
         metadata {
           name
@@ -193,7 +204,7 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
           ...eventsContents   
         }
         parent { # ReplicaSet or DaemonSet or StatefulSet (if any exists)
-          parent { # Deployment (if any exists)
+          ...on ReplicaSet { # Deployment (if any exists)
             events { # Get events for the above grandparent resources. 
               ...eventsContents
             }
@@ -203,7 +214,7 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
     }
   }
 
-  fragment eventsContents on IoK8sApiCoreV1EventList {
+  fragment eventsContents on EventList {
     items {
       message
       reason
