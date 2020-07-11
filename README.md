@@ -68,7 +68,7 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
 
   ## Interactive visualiation by Postman
 
-  Resource relation is visualized as tree form. Please refer to [graphql-treeview](./graphql-greeview).
+  Resource relation is visualized as tree form. Please refer to [graphql-treeview](./graphql-treeview).
 
   ![](graphql-treeview/img/2020-07-10-01-37-33.png)
 
