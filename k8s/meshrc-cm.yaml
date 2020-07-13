@@ -217,8 +217,16 @@ data:
           namespace: Namespace
           events: EventList
         }
-        extend type StatefulSet implements K8sResourceInterface
-        extend type DaemonSet implements K8sResourceInterface
+        extend type DaemonSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+          namespace: Namespace
+          events: EventList
+          children: PodList
+        }
+        extend type StatefulSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+          namespace: Namespace
+          events: EventList
+          children: PodList
+        }
         extend type Query {
           # cluster-wide
           nodes(limit: Int, labelSelector: String): NodeList
@@ -473,7 +481,7 @@ data:
       priorityclasses: "pc",
       pods: "po",
       services: "svc",
-      replicasets: "rc",
+      replicasets: "rs",
       deployments: "deploy",
       persistentvolumeclaims: "pvc",
       persistentvolumes: "pv",
@@ -554,6 +562,10 @@ data:
         }
         var name = ownerReferences[0].name;
         const kind = ownerReferences[0].kind;
+
+        var resolverRequirements = { items: {metadata: { name: true, namespace: true, labels: true, ownerReferences: {name: true}}}};
+        var mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
+
         const readfn = getReadFuncNameFromKind(kind);
         var _function = graphqlMeshK8s.api[readfn];
         var values = await _function({ name, namespace });
@@ -568,17 +580,19 @@ data:
         var namespace = obj.metadata && obj.metadata.namespace;
         var name = obj.metadata && obj.metadata.name;
         if((!name) || (!namespace)) {
+          console.log("createChildrenResolver", name, "No name or namespace")
           return { items: [] };
         }
-        console.log(name, namespace);
-        var resolverRequirements = { items: {metadata: { labels: true, ownerReferences: {name: true}}}};
+        //console.log(name, namespace);
+        var resolverRequirements = { items: {metadata: { name: true, namespace: true, labels: true, ownerReferences: {name: true}}}};
         var mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
-        //console.log(JSON.stringify(mergedFields));
+        //console.log("createChildrenResolver", JSON.stringify(mergedFields));
 
         const listfn = getListFuncName(resource);
+        //console.log("createChildrenResolver", "listfunction", listfn);
         var _function = graphqlMeshK8s.api[listfn];
         var list = await _function({ namespace }, mergedFields);
-        console.log("children base", JSON.stringify(list.items));
+        //console.log("children base", JSON.stringify(list.items));
         var returnItems = list.items.filter(elem => {
           var ownerReferences = elem.metadata && elem.metadata.ownerReferences;
           if((!ownerReferences) || (!ownerReferences.length)) {
@@ -606,7 +620,7 @@ data:
         const listfn = getListFuncName(resource);
         var _function = graphqlMeshK8s.api[listfn];
         //var labelSelector = Object.keys(selector).map(key => key+"="+selector[key]).join(",");
-        var resolverRequirements = { items: { metadata: {labels: true}}};
+        var resolverRequirements = { items: { metadata: {name: true, namespace: true, labels: true, ownerReferences: {name: true}}}};
         var mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
         console.log(JSON.stringify(mergedFields));
         var list = await _function({ namespace }, mergedFields);
@@ -635,7 +649,7 @@ data:
 
         const listfn = getListFuncName(resource);
         var _function = graphqlMeshK8s.api[listfn];
-        var resolverRequirements = { items: {spec: {selector: true }}};
+        var resolverRequirements = { items: {metadata: {name: true, namespace: true}, spec: {selector: true }}};
         var mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
         var list = await _function({ namespace }, mergedFields);
         console.log("connected base", JSON.stringify(list.items));
@@ -687,7 +701,7 @@ data:
         if((!name) /*|| (!kind)*/ || (!namespace)) {
           return { items: [] };
         }
-        const resolverRequirements = { items: { involvedObject: { kind: true, name: true }}};
+        const resolverRequirements = { items: { metadata: {name: true, namespace: true}, involvedObject: { kind: true, name: true }}};
         const mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
         const events = await graphqlMeshK8s.api.listCoreV1NamespacedEvent({ namespace }, mergedFields);
         var returnEvents = events.items.filter(elem => {
@@ -740,6 +754,16 @@ data:
       },
       ReplicaSet: {
         parent: createParentResolver("deployments"),
+        children: createChildrenResolver("pods"),
+        namespace: createNamespaceResolver(),
+        events: createEventResolver()
+      },
+      StatefulSet: {
+        children: createChildrenResolver("pods"),
+        namespace: createNamespaceResolver(),
+        events: createEventResolver()
+      },
+      DaemonSet: {
         children: createChildrenResolver("pods"),
         namespace: createNamespaceResolver(),
         events: createEventResolver()

@@ -51,11 +51,11 @@ const children = d => {
   if(d == null) {
     return null;
   }
-  let rtn = d.data && (d.data.pods || d.data.po || d.data.services || d.data.svc);
+  let rtn = d.data && (d.data.pods || d.data.pos || d.data.services || d.data.svcs || d.data.deployments || d.data.deploys || d.data.replicasets || d.data.rss || d.data.statefulsets || d.data.stss || d.data.daemonsets || d.data.dss);
   if(rtn) {
     return [rtn];
   }
-  aliases = ['parent', 'mounting', 'connected', 'children', 'connecting', 'namespace'].filter(alias => d[alias] != null)
+  aliases = ['parent', 'mounting', 'connected', 'children', 'connecting', 'namespace', 'events'].filter(alias => d[alias] != null)
   // Label each children nodes with alias name
   aliases.forEach(alias => {
     d[alias].alias = alias;
@@ -88,7 +88,8 @@ const getIcon = d => {
     Deployment: "\uf1b3",
     Secret: "\uf084",
     ConfigMap: "\uf15b",
-    ReplicaSet: "\uf24d"
+    ReplicaSet: "\uf24d",
+    Event: "\uf06a"
   };
   const aliasiconmap = {
     connected: "\uf148",
@@ -96,7 +97,8 @@ const getIcon = d => {
     mounting: "\uf115",
     parent: "\uf062",
     children: "\uf063",
-    namespace: "\uf015"
+    namespace: "\uf015",
+    events: "\uf12a"
   };
   return typeiconmap[data.__typename] || aliasiconmap[data.alias] || "\uf128";
 }

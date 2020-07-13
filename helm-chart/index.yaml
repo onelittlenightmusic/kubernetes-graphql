@@ -3,7 +3,7 @@ entries:
   kubernetes-graphql:
   - apiVersion: v2
     appVersion: 0.1.15
-    created: "2020-07-11T01:23:21.233465-07:00"
+    created: "2020-07-13T01:19:40.822283-07:00"
     dependencies:
     - enabled: true
       name: graphql-mesh
@@ -16,7 +16,7 @@ entries:
       repository: ""
       version: 0.1.0
     description: A chart for GraphQL API server of Kubernetes
-    digest: 15b6dd02975f892228c9457c25f2b314fd12edfb1aff9e4125942cf1add345a5
+    digest: 8cfbe23ec868eab7121fa02ec348cbf8f6d2fb3e8563e26fd84f120d92ad9d03
     home: https://onelittlenightmusic.github.io/kubernetes-graphql/helm-chart
     keywords:
     - graphql
@@ -31,4 +31,4 @@ entries:
     urls:
     - https://onelittlenightmusic.github.io/kubernetes-graphql/helm-chart/kubernetes-graphql-0.1.0.tgz
     version: 0.1.0
-generated: "2020-07-11T01:23:21.232128-07:00"
+generated: "2020-07-13T01:19:40.820284-07:00"
