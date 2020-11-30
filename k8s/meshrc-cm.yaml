@@ -1,5 +1,13 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: meshrc-cm
 data:
+  init.sh: |-
+    #!/bin/bash
+    yarn add deepmerge graphql-fields
+    wget http://mesh-svc:8001/openapi/v2 -O swagger.json
   .meshrc.yaml: |-
     # merger: federation
     sources:
@@ -8,7 +16,6 @@ data:
           openapi:
             source: /work/swagger.json
             baseUrl: http://mesh-svc:8001/
-            skipSchemaValidation: true
         transforms:
           - rename:
               - from: IoK8sApiCoreV1Node
@@ -374,6 +381,8 @@ data:
         }
     additionalResolvers:
       - ./additional-resolvers.js
+    serve:
+      exampleQuery: example-query.graphql
         
   example-query.graphql: |-
     query q {
@@ -381,6 +390,11 @@ data:
         items {
           metadata {
             name
+            namespace 
+            ownerReferences {
+              name
+              kind
+            }
           }
           parent {
             # ReplicaSets (Pod's parent)
@@ -404,24 +418,13 @@ data:
               metadata {
                 name
               }
-              connecting {
-                # Pods (Service's connecting targets)
-                items {
-                  metadata {
-                    name
-                  }
-                }
-              }
             }
           }
         }
       }
     }
     
-  init.sh: |-
-    #!/bin/bash
-    yarn add deepmerge graphql-fields
-    curl -L http://mesh-svc:8001/openapi/v2 -o swagger.json
+
   additional-resolvers.js: |-
     const graphqlFields = require("graphql-fields");
     const merge = require('deepmerge');
@@ -598,7 +601,7 @@ data:
           if((!ownerReferences) || (!ownerReferences.length)) {
             return false;
           }
-          return name == ownerReferences[0].nameStringNonNull; //TOBE: this must be [0].name
+          return name == ownerReferences[0].name; //TOBE: this must be [0].name
         }); 
         list.items = returnItems;
         //console.log(list);
@@ -826,8 +829,4 @@ data:
     }
     resolvers.Query = addonQueryResolver;
     module.exports = { resolvers };
-kind: ConfigMap
-metadata:
-  creationTimestamp: null
-  name: meshrc-cm
-  namespace: default
+

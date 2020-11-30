@@ -9,13 +9,9 @@ metadata:
 spec:
   containers:
   - # image: hiroyukiosaki/graphql-mesh:v0.1.9
-    image: hiroyukiosaki/graphql-mesh:v0.2.13-all
+    image: hiroyukiosaki/graphql-mesh:latest-all-alpine
     name: mesh
     resources: {}
-    command:
-    - /bin/bash
-    - -c
-    - sh ./init.sh && yarn install && yarn start
     ports:
     - containerPort: 4000
     volumeMounts:
@@ -45,4 +41,5 @@ spec:
       name: meshrc-cm
   dnsPolicy: ClusterFirst
   restartPolicy: Always
+  serviceAccountName: mesh
 status: {}
