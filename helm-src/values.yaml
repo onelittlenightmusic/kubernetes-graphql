@@ -1,14 +1,14 @@
 graphql-mesh:
   # You don't need to change this parameters unless you create your own .meshrc.yaml etc.
   mountConfigMap:
-    .meshrc.yaml: meshrc
-    example-query.graphql: meshrc
-    init.sh:  meshrc
+    .meshrc.yaml: meshrc-cm
+    example-query.graphql: meshrc-cm
+    init.sh:  meshrc-cm
     # childResolveReference.js: meshrc
-    additional-resolvers.js: meshrc
+    additional-resolvers.js: meshrc-cm
   image:
   #   pullPolicy: Always
-    tag: "v0.2.13-all"
+    tag: "latest-all-alpine"
   ingress:
     enabled: true
     # annotations:
@@ -17,6 +17,7 @@ graphql-mesh:
     hosts:
       - host: graphql-mesh-k8s.127.0.0.1.xip.io
         paths: ["/"]
+  initialDelaySeconds: 100
 kubernetes-api-proxy:
   serviceAccount:
     annotations: {}
