@@ -8,16 +8,31 @@ metadata:
   namespace: default
 spec:
   containers:
-  - # image: hiroyukiosaki/graphql-mesh:v0.1.9
-    image: hiroyukiosaki/graphql-mesh:latest-all-alpine
+  - image: hiroyukiosaki/graphql-mesh:latest-all-alpine
     name: mesh
+    stdin: true 
+    tty: true 
+    resources: {}
+    ports:
+    - containerPort: 3999
+    volumeMounts:
+    - mountPath: /work/.meshrc.yaml
+      name: meshrc-cm
+      subPath: .meshrc.yaml
+    - mountPath: /work/init.sh
+      name: meshrc-cm
+      subPath: init.sh
+  - image: hiroyukiosaki/graphql-mesh:latest-all-alpine
+    name: mesh2
+    stdin: true 
+    tty: true 
     resources: {}
     ports:
     - containerPort: 4000
     volumeMounts:
     - mountPath: /work/.meshrc.yaml
       name: meshrc-cm
-      subPath: .meshrc.yaml
+      subPath: .meshrc2.yaml
     - mountPath: /work/init.sh
       name: meshrc-cm
       subPath: init.sh
@@ -27,6 +42,23 @@ spec:
     - mountPath: /work/additional-resolvers.js
       name: meshrc-cm
       subPath: additional-resolvers.js
+    # command:
+    # - sh
+    # - -c
+    # - sleep 3600
+  - image: hiroyukiosaki/openapi-to-graphql:latest
+    name: otg
+    stdin: true 
+    tty: true 
+    command:
+    - sh
+    - initOtg.sh
+    volumeMounts:
+    - mountPath: /initOtg.sh
+      name: meshrc-cm
+      subPath: initOtg.sh
+    ports:
+    - containerPort: 3000
   - image: bitnami/kubectl:latest
     name: proxy
     ports:

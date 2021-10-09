@@ -4,184 +4,547 @@ metadata:
   creationTimestamp: null
   name: meshrc-cm
 data:
+  initOtg.sh: |-
+    #!/bin/bash
+    while true; do
+      openapi-to-graphql http://mesh-svc:8001/openapi/v2 -uhttp://mesh-svc:8001/ --no-viewer
+    done
   init.sh: |-
     #!/bin/bash
-    yarn add deepmerge graphql-fields
-    wget http://mesh-svc:8001/openapi/v2 -O swagger.json
+    while true; do
+      yarn mesh serve && break
+    done
   .meshrc.yaml: |-
-    # merger: federation
     sources:
-      - name: graphqlMeshK8s
-        handler:
-          openapi:
-            source: /work/swagger.json
-            baseUrl: http://mesh-svc:8001/
-        transforms:
-          - rename:
-              - from: IoK8sApiCoreV1Node
-                to: Node
-              - from: IoK8sApiCoreV1NodeList
-                to: NodeList
-              - from: IoK8sApiCoreV1Namespace
-                to: Namespace
-              - from: IoK8sApiCoreV1NamespaceList
-                to: NamespaceList
-              - from: IoK8sApiRbacV1ClusterRoleBinding
-                to: ClusterRoleBinding
-              - from: IoK8sApiRbacV1ClusterRoleBindingList
-                to: ClusterRoleBindingList
-              - from: IoK8sApiRbacV1ClusterRole
-                to: ClusterRole
-              - from: IoK8sApiRbacV1ClusterRoleList
-                to: ClusterRoleList
-              - from: IoK8sApiStorageV1StorageClass
-                to: StorageClass
-              - from: IoK8sApiStorageV1StorageClassList
-                to: StorageClassList
-              - from: IoK8sApiAdmissionregistrationV1MutatingWebhookConfiguration
-                to: MutatingWebhookConfiguration
-              - from: IoK8sApiAdmissionregistrationV1MutatingWebhookConfigurationList
-                to: MutatingWebhookConfigurationList
-              - from: IoK8sApiAdmissionregistrationV1ValidatingWebhookConfiguration
-                to: ValidatingWebhookConfiguration
-              - from: IoK8sApiAdmissionregistrationV1ValidatingWebhookConfigurationList
-                to: ValidatingWebhookConfigurationList
-              - from: IoK8sApiCertificatesV1beta1CertificateSigningRequest
-                to: CertificateSigningRequest
-              - from: IoK8sApiCertificatesV1beta1CertificateSigningRequestList
-                to: CertificateSigningRequestList
-              - from: IoK8sApiPolicyV1beta1PodSecurityPolicy
-                to: PodSecurityPolicy
-              - from: IoK8sApiPolicyV1beta1PodSecurityPolicyList
-                to: PodSecurityPolicyList
-              - from: IoK8sApiCoreV1ComponentStatus
-                to: ComponentStatus
-              - from: IoK8sApiCoreV1ComponentStatusList
-                to: ComponentStatusList
-              - from: IoK8sApiextensionsApiserverPkgApisApiextensionsV1CustomResourceDefinition
-                to: CustomResourceDefinition
-              - from: IoK8sApiextensionsApiserverPkgApisApiextensionsV1CustomResourceDefinitionList
-                to: CustomResourceDefinitionList
-              - from: IoK8sApiSchedulingV1PriorityClass
-                to: PriorityClass
-              - from: IoK8sApiSchedulingV1PriorityClassList
-                to: PriorityClassList
-              - from: IoK8sApiStorageV1CSIDriver
-                to: CSIDriver
-              - from: IoK8sApiStorageV1CSIDriverList
-                to: CSIDriverList
-              - from: IoK8sApiStorageV1CSINode
-                to: CSINode
-              - from: IoK8sApiStorageV1CSINodeList
-                to: CSINodeList
-              - from: IoK8sApiStorageV1VolumeAttachment
-                to: VolumeAttachment
-              - from: IoK8sApiStorageV1VolumeAttachmentList
-                to: VolumeAttachmentList
-              - from: IoK8sApiCoreV1Pod
-                to: Pod
-              - from: IoK8sApiCoreV1PodList
-                to: PodList
-              - from: IoK8sApiCoreV1Service
-                to: Service
-              - from: IoK8sApiCoreV1ServiceList
-                to: ServiceList
-              - from: IoK8sApiNetworkingV1beta1Ingress
-                to: Ingress
-              - from: IoK8sApiNetworkingV1beta1IngressList
-                to: IngressList
-              - from: IoK8sApiAppsV1ReplicaSet
-                to: ReplicaSet
-              - from: IoK8sApiAppsV1ReplicaSetList
-                to: ReplicaSetList
-              - from: IoK8sApiAppsV1Deployment
-                to: Deployment
-              - from: IoK8sApiAppsV1DeploymentList
-                to: DeploymentList
-              - from: IoK8sApiAppsV1DaemonSet
-                to: DaemonSet
-              - from: IoK8sApiAppsV1DaemonSetList
-                to: DaemonSetList
-              - from: IoK8sApiAppsV1StatefulSet
-                to: StatefulSet
-              - from: IoK8sApiAppsV1StatefulSetList
-                to: StatefulSetList
-              - from: IoK8sApiCoreV1ReplicationController
-                to: ReplicationController
-              - from: IoK8sApiCoreV1ReplicationControllerList
-                to: ReplicationControllerList
-              - from: IoK8sApiAutoscalingV1HorizontalPodAutoscaler
-                to: HorizontalPodAutoscaler
-              - from: IoK8sApiAutoscalingV1HorizontalPodAutoscalerList
-                to: HorizontalPodAutoscalerList
-              - from: IoK8sApiBatchV1beta1CronJob
-                to: CronJob
-              - from: IoK8sApiBatchV1beta1CronJobList
-                to: CronJobList
-              - from: IoK8sApiBatchV1Job
-                to: Job
-              - from: IoK8sApiBatchV1JobList
-                to: JobList
-              - from: IoK8sApiRbacV1RoleBinding
-                to: RoleBinding
-              - from: IoK8sApiRbacV1RoleBindingList
-                to: RoleBindingList
-              - from: IoK8sApiRbacV1Role
-                to: Role
-              - from: IoK8sApiRbacV1RoleList
-                to: RoleList
-              - from: IoK8sApiCoreV1ServiceAccount
-                to: ServiceAccount
-              - from: IoK8sApiCoreV1ServiceAccountList
-                to: ServiceAccountList
-              - from: IoK8sApiCoreV1ResourceQuota
-                to: ResourceQuota
-              - from: IoK8sApiCoreV1ResourceQuotaList
-                to: ResourceQuotaList
-              - from: IoK8sApiCoreV1Endpoints
-                to: Endpoints
-              - from: IoK8sApiCoreV1EndpointsList
-                to: EndpointsList
-              - from: IoK8sApiAppsV1ControllerRevision
-                to: ControllerRevision
-              - from: IoK8sApiAppsV1ControllerRevisionList
-                to: ControllerRevisionList
-              - from: IoK8sApiNetworkingV1NetworkPolicy
-                to: NetworkPolicy
-              - from: IoK8sApiNetworkingV1NetworkPolicyList
-                to: NetworkPolicyList
-              - from: IoK8sApiPolicyV1beta1PodDisruptionBudget
-                to: PodDisruptionBudget
-              - from: IoK8sApiPolicyV1beta1PodDisruptionBudgetList
-                to: PodDisruptionBudgetList
-              - from: IoK8sApiCoreV1LimitRange
-                to: LimitRange
-              - from: IoK8sApiCoreV1LimitRangeList
-                to: LimitRangeList
-              - from: IoK8sApiCoreV1PodTemplate
-                to: PodTemplate
-              - from: IoK8sApiCoreV1PodTemplateList
-                to: PodTemplateList
-              - from: IoK8sApiCoreV1Event
-                to: Event
-              - from: IoK8sApiCoreV1EventList
-                to: EventList
-              - from: IoK8sApiCoreV1PersistentVolumeClaim
-                to: PersistentVolumeClaim
-              - from: IoK8sApiCoreV1PersistentVolumeClaimList
-                to: PersistentVolumeClaimList
-              - from: IoK8sApiCoreV1PersistentVolume
-                to: PersistentVolume
-              - from: IoK8sApiCoreV1PersistentVolumeList
-                to: PersistentVolumeList
-              - from: IoK8sApiCoreV1Secret
-                to: Secret
-              - from: IoK8sApiCoreV1SecretList
-                to: SecretList
-              - from: IoK8sApiCoreV1ConfigMap
-                to: ConfigMap
-              - from: IoK8sApiCoreV1ConfigMapList
-                to: ConfigMapList
+    - name: graphqlMeshK8s
+      handler:
+        graphql:
+          endpoint: http://mesh-svc:3000/graphql
+      transforms:
+        - rename:
+            mode: wrap
+            renames:
+            - from:
+                type: IoK8sApiCoreV1(.*)
+              to: 
+                type: $1
+              useRegExpForTypes: true
+            - from:
+                type: IoK8sApiAppsV1(.*)
+              to: 
+                type: $1
+              useRegExpForTypes: true
+            - from:
+                type: IoK8sApiNetworkingV1(.*)
+              to: 
+                type: $1
+              useRegExpForTypes: true
+            - from:
+                type: IoK8sApiStorageV1(.*)
+              to: 
+                type: $1
+              useRegExpForTypes: true
+            - from:
+                type: IoK8sApiRbacV1(.*)
+              to: 
+                type: $1
+              useRegExpForTypes: true
+            - from:
+                type: IoK8sApiCertificatesV1(.*)
+              to: 
+                type: $1
+              useRegExpForTypes: true
+            - from:
+                type: IoK8sApiPolicyV1(.*)
+              to: 
+                type: $1
+              useRegExpForTypes: true
+            - from:
+                type: Query
+                field: ioK8sApiCoreV1Pod
+              to: 
+                type: Query
+                field: Pod
+            - from:
+                type: Query
+                field: ioK8sApiCoreV1PodList
+              to: 
+                type: Query
+                field: Pods
+            - from:
+                type: Query
+                field: ioK8sApiCoreV1Namespace
+              to:
+                type: Query
+                field: Namespace
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1NamespaceList
+              to:
+                type: Query
+                field: Namespaces
+            - from: 
+                type: Query
+                field: ioK8sApiRbacV1ClusterRoleBinding
+              to:
+                type: Query
+                field: ClusterRoleBinding
+            - from: 
+                type: Query
+                field: ioK8sApiRbacV1ClusterRoleBindingList
+              to:
+                type: Query
+                field: ClusterRoleBindings
+            - from: 
+                type: Query
+                field: ioK8sApiRbacV1ClusterRole
+              to:
+                type: Query
+                field: ClusterRole
+            - from: 
+                type: Query
+                field: ioK8sApiRbacV1ClusterRoleList
+              to:
+                type: Query
+                field: ClusterRoles
+            - from: 
+                type: Query
+                field: ioK8sApiStorageV1StorageClass
+              to:
+                type: Query
+                field: StorageClass
+            - from: 
+                type: Query
+                field: ioK8sApiStorageV1StorageClassList
+              to:
+                type: Query
+                field: StorageClasses
+            - from: 
+                type: Query
+                field: ioK8sApiAdmissionregistrationV1MutatingWebhookConfiguration
+              to:
+                type: Query
+                field: MutatingWebhookConfiguration
+            - from: 
+                type: Query
+                field: ioK8sApiAdmissionregistrationV1MutatingWebhookConfigurationList
+              to:
+                type: Query
+                field: MutatingWebhookConfigurations
+            - from: 
+                type: Query
+                field: ioK8sApiAdmissionregistrationV1ValidatingWebhookConfiguration
+              to:
+                type: Query
+                field: ValidatingWebhookConfiguration
+            - from: 
+                type: Query
+                field: ioK8sApiAdmissionregistrationV1ValidatingWebhookConfigurationList
+              to:
+                type: Query
+                field: ValidatingWebhookConfigurations
+            - from: 
+                type: Query
+                field: ioK8sApiCertificatesV1beta1CertificateSigningRequest
+              to:
+                type: Query
+                field: CertificateSigningRequest
+            - from: 
+                type: Query
+                field: ioK8sApiCertificatesV1beta1CertificateSigningRequestList
+              to:
+                type: Query
+                field: CertificateSigningRequests
+            - from: 
+                type: Query
+                field: ioK8sApiPolicyV1beta1PodSecurityPolicy
+              to:
+                type: Query
+                field: PodSecurityPolicy
+            - from: 
+                type: Query
+                field: ioK8sApiPolicyV1beta1PodSecurityPolicyList
+              to:
+                type: Query
+                field: PodSecurityPolicys
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1ComponentStatus
+              to:
+                type: Query
+                field: ComponentStatus
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1ComponentStatusList
+              to:
+                type: Query
+                field: ComponentStatuses
+            - from: 
+                type: Query
+                field: ioK8sApiextensionsApiserverPkgApisApiextensionsV1CustomResourceDefinition
+              to:
+                type: Query
+                field: CustomResourceDefinition
+            - from: 
+                type: Query
+                field: ioK8sApiextensionsApiserverPkgApisApiextensionsV1CustomResourceDefinitionList
+              to:
+                type: Query
+                field: CustomResourceDefinitions
+            - from: 
+                type: Query
+                field: ioK8sApiSchedulingV1PriorityClass
+              to:
+                type: Query
+                field: PriorityClass
+            - from: 
+                type: Query
+                field: ioK8sApiSchedulingV1PriorityClassList
+              to:
+                type: Query
+                field: PriorityClasses
+            - from: 
+                type: Query
+                field: ioK8sApiStorageV1CSIDriver
+              to:
+                type: Query
+                field: CSIDriver
+            - from: 
+                type: Query
+                field: ioK8sApiStorageV1CSIDriverList
+              to:
+                type: Query
+                field: CSIDrivers
+            - from: 
+                type: Query
+                field: ioK8sApiStorageV1CSINode
+              to:
+                type: Query
+                field: CSINode
+            - from: 
+                type: Query
+                field: ioK8sApiStorageV1CSINodeList
+              to:
+                type: Query
+                field: CSINodes
+            - from: 
+                type: Query
+                field: ioK8sApiStorageV1VolumeAttachment
+              to:
+                type: Query
+                field: VolumeAttachment
+            - from: 
+                type: Query
+                field: ioK8sApiStorageV1VolumeAttachmentList
+              to:
+                type: Query
+                field: VolumeAttachments
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1Pod
+              to:
+                type: Query
+                field: Pod
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1Service
+              to:
+                type: Query
+                field: Service
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1ServiceList
+              to:
+                type: Query
+                field: Services
+            - from: 
+                type: Query
+                field: ioK8sApiNetworkingV1beta1Ingress
+              to:
+                type: Query
+                field: Ingress
+            - from: 
+                type: Query
+                field: ioK8sApiNetworkingV1beta1IngressList
+              to:
+                type: Query
+                field: Ingresses
+            - from: 
+                type: Query
+                field: ioK8sApiAppsV1ReplicaSet
+              to:
+                type: Query
+                field: ReplicaSet
+            - from: 
+                type: Query
+                field: ioK8sApiAppsV1ReplicaSetList
+              to:
+                type: Query
+                field: ReplicaSets
+            - from: 
+                type: Query
+                field: ioK8sApiAppsV1Deployment
+              to:
+                type: Query
+                field: Deployment
+            - from: 
+                type: Query
+                field: ioK8sApiAppsV1DeploymentList
+              to:
+                type: Query
+                field: Deployments
+            - from: 
+                type: Query
+                field: ioK8sApiAppsV1DaemonSet
+              to:
+                type: Query
+                field: DaemonSet
+            - from: 
+                type: Query
+                field: ioK8sApiAppsV1DaemonSetList
+              to:
+                type: Query
+                field: DaemonSets
+            - from: 
+                type: Query
+                field: ioK8sApiAppsV1StatefulSet
+              to:
+                type: Query
+                field: StatefulSet
+            - from: 
+                type: Query
+                field: ioK8sApiAppsV1StatefulSetList
+              to:
+                type: Query
+                field: StatefulSets
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1ReplicationController
+              to:
+                type: Query
+                field: ReplicationController
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1ReplicationControllerList
+              to:
+                type: Query
+                field: ReplicationControllers
+            - from: 
+                type: Query
+                field: ioK8sApiAutoscalingV1HorizontalPodAutoscaler
+              to:
+                type: Query
+                field: HorizontalPodAutoscaler
+            - from: 
+                type: Query
+                field: ioK8sApiAutoscalingV1HorizontalPodAutoscalerList
+              to:
+                type: Query
+                field: HorizontalPodAutoscalers
+            - from: 
+                type: Query
+                field: ioK8sApiBatchV1beta1CronJob
+              to:
+                type: Query
+                field: CronJob
+            - from: 
+                type: Query
+                field: ioK8sApiBatchV1beta1CronJobList
+              to:
+                type: Query
+                field: CronJobs
+            - from: 
+                type: Query
+                field: ioK8sApiBatchV1Job
+              to:
+                type: Query
+                field: Job
+            - from: 
+                type: Query
+                field: ioK8sApiBatchV1JobList
+              to:
+                type: Query
+                field: Jobs
+            - from: 
+                type: Query
+                field: ioK8sApiRbacV1RoleBinding
+              to:
+                type: Query
+                field: RoleBinding
+            - from: 
+                type: Query
+                field: ioK8sApiRbacV1RoleBindingList
+              to:
+                type: Query
+                field: RoleBindings
+            - from: 
+                type: Query
+                field: ioK8sApiRbacV1Role
+              to:
+                type: Query
+                field: Role
+            - from: 
+                type: Query
+                field: ioK8sApiRbacV1RoleList
+              to:
+                type: Query
+                field: Roles
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1ServiceAccount
+              to:
+                type: Query
+                field: ServiceAccount
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1ServiceAccountList
+              to:
+                type: Query
+                field: ServiceAccounts
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1ResourceQuota
+              to:
+                type: Query
+                field: ResourceQuota
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1ResourceQuotaList
+              to:
+                type: Query
+                field: ResourceQuotas
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1Endpoints
+              to:
+                type: Query
+                field: Endpoints
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1EndpointsList
+              to:
+                type: Query
+                field: EndpointsList
+            - from: 
+                type: Query
+                field: ioK8sApiAppsV1ControllerRevision
+              to:
+                type: Query
+                field: ControllerRevision
+            - from: 
+                type: Query
+                field: ioK8sApiAppsV1ControllerRevisionList
+              to:
+                type: Query
+                field: ControllerRevisions
+            - from: 
+                type: Query
+                field: ioK8sApiNetworkingV1NetworkPolicy
+              to:
+                type: Query
+                field: NetworkPolicy
+            - from: 
+                type: Query
+                field: ioK8sApiNetworkingV1NetworkPolicyList
+              to:
+                type: Query
+                field: NetworkPolicys
+            - from: 
+                type: Query
+                field: ioK8sApiPolicyV1beta1PodDisruptionBudget
+              to:
+                type: Query
+                field: PodDisruptionBudget
+            - from: 
+                type: Query
+                field: ioK8sApiPolicyV1beta1PodDisruptionBudgetList
+              to:
+                type: Query
+                field: PodDisruptionBudgets
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1LimitRange
+              to:
+                type: Query
+                field: LimitRange
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1LimitRangeList
+              to:
+                type: Query
+                field: LimitRanges
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1PodTemplate
+              to:
+                type: Query
+                field: PodTemplate
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1PodTemplateList
+              to:
+                type: Query
+                field: PodTemplates
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1Event
+              to:
+                type: Query
+                field: Event
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1EventList
+              to:
+                type: Query
+                field: Events
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1PersistentVolumeClaim
+              to:
+                type: Query
+                field: PersistentVolumeClaim
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1PersistentVolumeClaimList
+              to:
+                type: Query
+                field: PersistentVolumeClaims
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1PersistentVolume
+              to:
+                type: Query
+                field: PersistentVolume
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1PersistentVolumeList
+              to:
+                type: Query
+                field: PersistentVolumes
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1Secret
+              to:
+                type: Query
+                field: Secret
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1SecretList
+              to:
+                type: Query
+                field: Secrets
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1ConfigMap
+              to:
+                type: Query
+                field: ConfigMap
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1ConfigMapList
+              to:
+                type: Query
+                field: ConfigMaps
 
     additionalTypeDefs: |
         interface K8sResourceInterface {
@@ -199,23 +562,149 @@ data:
         extend type ConfigMap implements K8sResourceInterface
         extend type PersistentVolumeClaim implements K8sResourceInterface
         extend type Secret implements K8sResourceInterface
-        union K8sMounted = ConfigMap | PersistentVolume | Secret
+        union K8sMounted = ConfigMap | PersistentVolumeClaim | Secret
         union K8sPodParent = ReplicaSet | DaemonSet | StatefulSet | Node
+        
+    #     extend type Pod implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+    #       parent: K8sPodParent
+    #       connected: ServiceList
+    #       mounting: [K8sMounted]
+    #       namespace: Namespace
+    #       events: EventList
+    #     }
+    #     extend type ReplicaSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+    # #       parent: Deployment
+    #       children: PodList
+    # #       namespace: Namespace
+    # #       events: EventList
+    #     }
+    #     extend type Deployment implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+    #       children: ReplicaSetList
+    #       namespace: Namespace
+    #       events: EventList
+    #     }
+    #     extend type Service implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+    #       connecting: PodList
+    #       namespace: Namespace
+    #       events: EventList
+    #     }
+    #     extend type DaemonSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+    # #       namespace: Namespace
+    # #       events: EventList
+    #       children: PodList
+    #     }
+    #     extend type StatefulSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+    # #       namespace: Namespace
+    # #       events: EventList
+    #       children: PodList
+    #     }
+
+    serve:
+      hostname: 0.0.0.0
+      port: 3999
+  example-query.graphql: |-
+    query q {
+      Pods(namespace: "default") {
+        items {
+          metadata {
+            name
+            namespace
+            labels
+          }
+          parent {
+            ... on ReplicaSet {
+              metadata {
+                name
+                namespace
+              }
+              parent {
+                metadata {
+                  name
+                }
+              }
+              children {
+                items {
+                  metadata {
+                    name
+                    labels
+                  }
+                }
+              }
+            }
+          }
+          connected {
+            items {
+              metadata {
+                name
+              }
+            }
+          }
+          namespace {
+            metadata {
+              name
+            }
+          }
+          mounting {
+            __typename
+            ... on Secret {
+              metadata {name}          
+            }
+            ... on ConfigMap {
+              metadata {
+                name
+                namespace
+              }
+            }
+          }
+          # events {
+          #   items {
+          #   	metadata {name}
+          #     message
+          #   }
+          # }
+        }
+      }
+      Services(namespace: "default") {
+        items {
+          metadata {
+            name
+          }
+        }
+      }
+    }
+
+  .meshrc2.yaml: |-
+    sources:
+    - name: graphqlMeshK8s
+      handler:
+        graphql:
+          endpoint: http://mesh-svc:3999/graphql
+    additionalTypeDefs: |
         extend type Pod implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
           parent: K8sPodParent
           connected: ServiceList
+          namespace: Namespace
+          events: EventList
           mounting: [K8sMounted]
+        }
+        extend type Deployment implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+          children: ReplicaSetList
           namespace: Namespace
           events: EventList
         }
         extend type ReplicaSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+          children: PodList
           parent: Deployment
+          namespace: Namespace
+          events: EventList
+        }
+        extend type DaemonSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
           children: PodList
           namespace: Namespace
           events: EventList
         }
-        extend type Deployment implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-          children: ReplicaSetList
+        extend type StatefulSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+          children: PodList
           namespace: Namespace
           events: EventList
         }
@@ -224,439 +713,121 @@ data:
           namespace: Namespace
           events: EventList
         }
-        extend type DaemonSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-          namespace: Namespace
-          events: EventList
-          children: PodList
-        }
-        extend type StatefulSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-          namespace: Namespace
-          events: EventList
-          children: PodList
-        }
-        extend type Query {
-          # cluster-wide
-          nodes(limit: Int, labelSelector: String): NodeList
-          namespaces(limit: Int, labelSelector: String): NamespaceList
-          clusterrolebindings(limit: Int, labelSelector: String): ClusterRoleBindingList
-          clusterroles(limit: Int, labelSelector: String): ClusterRoleList
-          storageclasses(limit: Int, labelSelector: String): StorageClassList
-          mutatingwebhookconfigurations(limit: Int, labelSelector: String): MutatingWebhookConfigurationList
-          validatingwebhookconfigurations(limit: Int, labelSelector: String): ValidatingWebhookConfigurationList
-          certificatesigningrequests(limit: Int, labelSelector: String): CertificateSigningRequestList
-          podsecuritypolicies(limit: Int, labelSelector: String): PodSecurityPolicyList
-          componentstatuses(limit: Int, labelSelector: String): ComponentStatusList
-          customresourcedefinitions(limit: Int, labelSelector: String): CustomResourceDefinitionList
-          priorityclasses(limit: Int, labelSelector: String): PriorityClassList
-          csidrivers(limit: Int, labelSelector: String): CSIDriverList
-          csinodes(limit: Int, labelSelector: String): CSINodeList
-          volumeattachments(limit: Int, labelSelector: String): VolumeAttachmentList
-          # namespaced
-          pods(namespace: String!, limit: Int, labelSelector: String): PodList
-          services(namespace: String!, limit: Int, labelSelector: String): ServiceList
-          ingresses(namespace: String!, limit: Int, labelSelector: String): IngressList
-          replicasets(namespace: String!, limit: Int, labelSelector: String): ReplicaSetList
-          deployments(namespace: String!, limit: Int, labelSelector: String): DeploymentList
-          daemonsets(namespace: String!, limit: Int, labelSelector: String): DaemonSetList
-          statefulsets(namespace: String!, limit: Int, labelSelector: String): StatefulSetList
-          replicationcontrollers(namespace: String!, limit: Int, labelSelector: String): ReplicationControllerList
-          horizontalpodautoscalers(namespace: String!, limit: Int, labelSelector: String): HorizontalPodAutoscalerList
-          cronjobs(namespace: String!, limit: Int, labelSelector: String): CronJobList
-          jobs(namespace: String!, limit: Int, labelSelector: String): JobList
-          rolebindings(namespace: String!, limit: Int, labelSelector: String): RoleBindingList
-          roles(namespace: String!, limit: Int, labelSelector: String): RoleList
-          serviceaccounts(namespace: String!, limit: Int, labelSelector: String): ServiceAccountList
-          resourcequotas(namespace: String!, limit: Int, labelSelector: String): ResourceQuotaList
-          endpoints(namespace: String!, limit: Int, labelSelector: String): EndpointsList
-          controllerrevisions(namespace: String!, limit: Int, labelSelector: String): ControllerRevisionList
-          networkpolicies(namespace: String!, limit: Int, labelSelector: String): NetworkPolicyList
-          poddisruptionbudgets(namespace: String!, limit: Int, labelSelector: String): PodDisruptionBudgetList
-          limitranges(namespace: String!, limit: Int, labelSelector: String): LimitRangeList
-          podtemplates(namespace: String!, limit: Int, labelSelector: String): PodTemplateList
-          events(namespace: String!, limit: Int, labelSelector: String): EventList
-          persistentvolumeclaims(namespace: String!, limit: Int, labelSelector: String): PersistentVolumeClaimList
-          persistentvolumes(namespace: String!, limit: Int, labelSelector: String): PersistentVolumeList
-          secrets(namespace: String!, limit: Int, labelSelector: String): SecretList
-          configmaps(namespace: String!, limit: Int, labelSelector: String): ConfigMapList
-          nos(limit: Int, labelSelector: String): NodeList
-          nss(limit: Int, labelSelector: String): NamespaceList
-          scs(limit: Int, labelSelector: String): StorageClassList
-          csrs(limit: Int, labelSelector: String): CertificateSigningRequestList
-          psps(limit: Int, labelSelector: String): PodSecurityPolicyList
-          css(limit: Int, labelSelector: String): ComponentStatusList
-          crds(limit: Int, labelSelector: String): CustomResourceDefinitionList
-          pcs(limit: Int, labelSelector: String): PriorityClassList
-          pos(namespace: String!, limit: Int, labelSelector: String): PodList
-          svcs(namespace: String!, limit: Int, labelSelector: String): ServiceList
-          rss(namespace: String!, limit: Int, labelSelector: String): ReplicaSetList
-          deploys(namespace: String!, limit: Int, labelSelector: String): DeploymentList
-          pvcs(namespace: String!, limit: Int, labelSelector: String): PersistentVolumeClaimList
-          pvs(namespace: String!, limit: Int, labelSelector: String): PersistentVolumeList
-          ings(namespace: String!, limit: Int, labelSelector: String): IngressList
-          dss(namespace: String!, limit: Int, labelSelector: String): DaemonSetList
-          stss(namespace: String!, limit: Int, labelSelector: String): StatefulSetList
-          rcs(namespace: String!, limit: Int, labelSelector: String): ReplicationControllerList
-          hpas(namespace: String!, limit: Int, labelSelector: String): HorizontalPodAutoscalerList
-          cjs(namespace: String!, limit: Int, labelSelector: String): CronJobList
-          sas(namespace: String!, limit: Int, labelSelector: String): ServiceAccountList
-          quotas(namespace: String!, limit: Int, labelSelector: String): ResourceQuotaList
-          eps(namespace: String!, limit: Int, labelSelector: String): EndpointsList
-          netpols(namespace: String!, limit: Int, labelSelector: String): NetworkPolicyList
-          pdbs(namespace: String!, limit: Int, labelSelector: String): PodDisruptionBudgetList
-          limitss(namespace: String!, limit: Int, labelSelector: String): LimitRangeList
-          evs(namespace: String!, limit: Int, labelSelector: String): EventList
-          cms(namespace: String!, limit: Int, labelSelector: String): ConfigMapList
-          # single
-          # cluster-wide
-          node(name: String, limit: Int, labelSelector: String): Node
-          namespace(name: String, limit: Int, labelSelector: String): Namespace
-          clusterrolebinding(name: String, limit: Int, labelSelector: String): ClusterRoleBinding
-          clusterrole(name: String, limit: Int, labelSelector: String): ClusterRole
-          storageclass(name: String, limit: Int, labelSelector: String): StorageClass
-          mutatingwebhookconfiguration(name: String, limit: Int, labelSelector: String): MutatingWebhookConfiguration
-          validatingwebhookconfiguration(name: String, limit: Int, labelSelector: String): ValidatingWebhookConfiguration
-          certificatesigningrequest(name: String, limit: Int, labelSelector: String): CertificateSigningRequest
-          podsecuritypolicy(name: String, limit: Int, labelSelector: String): PodSecurityPolicy
-          componentstatus(name: String, limit: Int, labelSelector: String): ComponentStatus
-          customresourcedefinition(name: String, limit: Int, labelSelector: String): CustomResourceDefinition
-          priorityclass(name: String, limit: Int, labelSelector: String): PriorityClass
-          csidriver(name: String, limit: Int, labelSelector: String): CSIDriver
-          csinode(name: String, limit: Int, labelSelector: String): CSINode
-          volumeattachment(name: String, limit: Int, labelSelector: String): VolumeAttachment
-          # namespaced
-          pod(namespace: String!, name: String, limit: Int, labelSelector: String): Pod
-          service(namespace: String!, name: String, limit: Int, labelSelector: String): Service
-          ingress(namespace: String!, name: String, limit: Int, labelSelector: String): Ingress
-          replicaset(namespace: String!, name: String, limit: Int, labelSelector: String): ReplicaSet
-          deployment(namespace: String!, name: String, limit: Int, labelSelector: String): Deployment
-          daemonset(namespace: String!, name: String, limit: Int, labelSelector: String): DaemonSet
-          statefulset(namespace: String!, name: String, limit: Int, labelSelector: String): StatefulSet
-          replicationcontroller(namespace: String!, name: String, limit: Int, labelSelector: String): ReplicationController
-          horizontalpodautoscaler(namespace: String!, name: String, limit: Int, labelSelector: String): HorizontalPodAutoscaler
-          cronjob(namespace: String!, name: String, limit: Int, labelSelector: String): CronJob
-          job(namespace: String!, name: String, limit: Int, labelSelector: String): Job
-          rolebinding(namespace: String!, name: String, limit: Int, labelSelector: String): RoleBinding
-          role(namespace: String!, name: String, limit: Int, labelSelector: String): Role
-          serviceaccount(namespace: String!, name: String, limit: Int, labelSelector: String): ServiceAccount
-          resourcequota(namespace: String!, name: String, limit: Int, labelSelector: String): ResourceQuota
-          endpoint(namespace: String!, name: String, limit: Int, labelSelector: String): Endpoints
-          controllerrevision(namespace: String!, name: String, limit: Int, labelSelector: String): ControllerRevision
-          networkpolicy(namespace: String!, name: String, limit: Int, labelSelector: String): NetworkPolicy
-          poddisruptionbudget(namespace: String!, name: String, limit: Int, labelSelector: String): PodDisruptionBudget
-          limitrange(namespace: String!, name: String, limit: Int, labelSelector: String): LimitRange
-          podtemplate(namespace: String!, name: String, limit: Int, labelSelector: String): PodTemplate
-          event(namespace: String!, name: String, limit: Int, labelSelector: String): Event
-          persistentvolumeclaim(namespace: String!, name: String, limit: Int, labelSelector: String): PersistentVolumeClaim
-          persistentvolume(namespace: String!, name: String, limit: Int, labelSelector: String): PersistentVolume
-          secret(namespace: String!, name: String, limit: Int, labelSelector: String): Secret
-          configmap(namespace: String!, name: String, limit: Int, labelSelector: String): ConfigMap
-          no(name: String, limit: Int, labelSelector: String): Node
-          ns(name: String, limit: Int, labelSelector: String): Namespace
-          sc(name: String, limit: Int, labelSelector: String): StorageClass
-          csr(name: String, limit: Int, labelSelector: String): CertificateSigningRequest
-          psp(name: String, limit: Int, labelSelector: String): PodSecurityPolicy
-          cs(name: String, limit: Int, labelSelector: String): ComponentStatus
-          crd(name: String, limit: Int, labelSelector: String): CustomResourceDefinition
-          pc(name: String, limit: Int, labelSelector: String): PriorityClass
-          po(namespace: String!, name: String, limit: Int, labelSelector: String): Pod
-          svc(namespace: String!, name: String, limit: Int, labelSelector: String): Service
-          rs(namespace: String!, name: String, limit: Int, labelSelector: String): ReplicaSet
-          deploy(namespace: String!, name: String, limit: Int, labelSelector: String): Deployment
-          pvc(namespace: String!, name: String, limit: Int, labelSelector: String): PersistentVolumeClaim
-          pv(namespace: String!, name: String, limit: Int, labelSelector: String): PersistentVolume
-          ing(namespace: String!, name: String, limit: Int, labelSelector: String): Ingress
-          ds(namespace: String!, name: String, limit: Int, labelSelector: String): DaemonSet
-          sts(namespace: String!, name: String, limit: Int, labelSelector: String): StatefulSet
-          rc(namespace: String!, name: String, limit: Int, labelSelector: String): ReplicationController
-          hpa(namespace: String!, name: String, limit: Int, labelSelector: String): HorizontalPodAutoscaler
-          cj(namespace: String!, name: String, limit: Int, labelSelector: String): CronJob
-          sa(namespace: String!, name: String, limit: Int, labelSelector: String): ServiceAccount
-          quota(namespace: String!, name: String, limit: Int, labelSelector: String): ResourceQuota
-          ep(namespace: String!, name: String, limit: Int, labelSelector: String): Endpoints
-          netpol(namespace: String!, name: String, limit: Int, labelSelector: String): NetworkPolicy
-          pdb(namespace: String!, name: String, limit: Int, labelSelector: String): PodDisruptionBudget
-          limits(namespace: String!, name: String, limit: Int, labelSelector: String): LimitRange
-          ev(namespace: String!, name: String, limit: Int, labelSelector: String): Event
-          cm(namespace: String!, name: String, limit: Int, labelSelector: String): ConfigMap
-        }
     additionalResolvers:
       - ./additional-resolvers.js
     serve:
       exampleQuery: example-query.graphql
-        
-  example-query.graphql: |-
-    query q {
-      pods(namespace: "default") {
-        items {
-          metadata {
-            name
-            namespace 
-            ownerReferences {
-              name
-              kind
-            }
-          }
-          parent {
-            # ReplicaSets (Pod's parent)
-            ... on ReplicaSet {
-              metadata {
-                name
-              }
-              children {
-                # Pods (ReplicaSet's children)
-                items {
-                  metadata {
-                    name
-                  }
-                }
-              }
-            }
-          }
-          connected {
-            # Services (Pod's connected resources)
-            items {
-              metadata {
-                name
-              }
-            }
-          }
-        }
-      }
-    }
-    
-
+      hostname: 0.0.0.0
+      port: 4000
   additional-resolvers.js: |-
-    const graphqlFields = require("graphql-fields");
-    const merge = require('deepmerge');
+    const { print } = require('graphql');
+    //const graphqlFields = require("graphql-fields");
+    //const merge = require('deepmerge');
 
-    const resources = {
-      nodes: ["node", "CoreV1Node"],
-      namespaces: ["namespace", "CoreV1Namespace"],
-      clusterroles: ["clusterrole", "RbacAuthorizationV1ClusterRole"],
-      clusterrolebindings: ["clusterrolebinding", "RbacAuthorizationV1ClusterRoleBinding"],
-      storageclasses: ["storageclass", "StorageV1StorageClass"],
-      mutatingwebhookconfigurations: ["mutatingwebhookconfiguration", "AdmissionregistrationV1MutatingWebhookConfiguration"],
-      validatingwebhookconfigurations: ["validatingwebhookconfiguration", "AdmissionregistrationV1ValidatingWebhookConfiguration"],
-      certificatesigningrequests: ["certificatesigningrequest", "CertificatesV1beta1CertificateSigningRequest"],
-      podsecuritypolicies: ["podsecuritypolicy", "PolicyV1beta1PodSecurityPolicy"],
-      componentstatuses: ["componentstatus", "CoreV1ComponentStatus"],
-      customresourcedefinitions: ["customresourcedefinition", "ApiextensionsV1CustomResourceDefinition"],
-      priorityclasses: ["priorityclass", "SchedulingV1PriorityClass"],
-      csidrivers: ["csidriver", "StorageV1CSIDriver"],
-      csinodes: ["csinode", "StorageV1CSINode"],
-      volumeattachments: ["volumeattachment", "VolumeAttachment"],
-      pods: ["pod", "CoreV1NamespacedPod"],
-      services: ["service", "CoreV1NamespacedService"],
-      ingresses: ["ingress", "NetworkingV1beta1NamespacedIngress"],
-      replicasets: ["replicaset", "AppsV1NamespacedReplicaSet"],
-      deployments: ["deployment", "AppsV1NamespacedDeployment"],
-      statefulsets: ["statefulset", "AppsV1NamespacedStatefulSet"],
-      daemonsets: ["daemonset", "AppsV1NamespacedDaemonSet"],
-      replicationcontrollers: ["replicationcontroller", "CoreV1NamespacedReplicationController"],
-      horizontalpodautoscalers: ["horizontalpodautoscaler", "AutoscalingV1NamespacedHorizontalPodAutoscaler"],
-      cronjobs: ["cronjob", "BatchV1beta1NamespacedCronJob"],
-      jobs: ["job", "BatchV1beta1NamespacedJob"],
-      rolebindings: ["rolebinding", "RbacAuthorizationV1NamespacedRoleBinding"],
-      roles: ["role", "RbacAuthorizationV1NamespacedRole"],
-      serviceaccounts: ["serviceaccount", "CoreV1NamespacedServiceAccount"],
-      resourcequotas: ["resourcequota", "CoreV1NamespacedResourceQuota"],
-      endpoints: ["endpoint", "CoreV1NamespacedEndpoints"],
-      controllerrevisions: ["controllerrevision", "AppsV1ControllerRevisionList"],
-      networkpolicies: ["networkpolicy", "NetworkingV1NamespacedNetworkPolicy"],
-      poddisruptionbudgets: ["poddisruptionbudget", "PolicyV1beta1NamespacedPodDisruptionBudget"],
-      limitranges: ["limitrange", "CoreV1NamespacedLimitRange"],
-      podtemplates: ["podtemplate", "CoreV1NamespacedPodTemplate"],
-      events: ["event", "CoreV1NamespacedEvent"],
-      persistentvolumeclaims: ["persistentvolumeclaim", "CoreV1NamespacedPersistentVolumeClaim"],
-      persistentvolumes: ["persistentvolume", "CoreV1NamespacedPersistentVolume"], 
-      secrets: ["secret", "CoreV1NamespacedSecret"],
-      configmaps: ["configmap", "CoreV1NamespacedConfigMap"]
-    };
-
-    const abbreviations = {
-      nodes: "no",
-      namespaces: "ns",
-      storageclasses: "sc",
-      certificatesigningrequests: "csr",
-      podsecuritypolicies: "psp",
-      componentstatuses: "cs",
-      customresourcedefinitions: "crd",
-      priorityclasses: "pc",
-      pods: "po",
-      services: "svc",
-      replicasets: "rs",
-      deployments: "deploy",
-      persistentvolumeclaims: "pvc",
-      persistentvolumes: "pv",
-      ingresses: "ing",
-      statefulsets: "sts",
-      daemonsets: "ds",
-      replicationcontrollers: "rc",
-      horizontalpodautoscalers: "hpa",
-      cronjobs: "cj",
-      serviceaccounts: "sa",
-      resourcequotas: "quota",
-      endpoints: "ep",
-      networkpolicies: "netpol",
-      poddisruptionbudgets: "pdb",
-      limitranges: "limits",
-      events: "ev",
-      configmaps: "cm"
-    };
-
-
-    const kindmap = {
-      Node: "nodes",
-      Namespace: "namespaces",
-      ClusterRoleBinding: "clusterrolebindings",
-      "ClusterRole": "clusterroles",
-      StorageClass: "storageclasses",
-      MutatingWebhookConfiguration: "mutatingwebhookconfigurations",
-      ValidatingWebhookConfiguration: "validatingwebhookconfigurations",
-      CertificateSigningRequest: "certificatesigningrequests",
-      PodSecurityPolicy: "podsecuritypolicies",
-      ComponentStatus: "componentstatuses",
-      CustomResourceDefinition: "customresourcedefinitions",
-      PriorityClass: "priorityclasses",
-      CSIDriver: "csidrivers",
-      CSINode: "csinodes",
-      VolumeAttachment: "volumeattachments",
-      NamespacedPod: "pods",
-      Service: "services",
-      Ingress: "ingresses",
-      ReplicaSet: "replicasets",
-      Deployment: "deployments",
-      StatefulSet: "statefulsets",
-      DaemonSet: "daemonsets",
-      ReplicationController: "replicationcontrollers",
-      HorizontalPodAutoscale: "horizontalpodautoscalers",
-      CronJob: "cronjobs",
-      Job: "jobs",
-      RoleBinding: "rolebindings",
-      Role: "roles",
-      ServiceAccount: "serviceaccounts",
-      ResourceQuota: "resourcequotas",
-      Endpoints: "endpoints",
-      ControllerRevisionList: "controllerrevisions",
-      NetworkPolicy: "networkpolicies",
-      PodDisruptionBudget: "poddisruptionbudgets",
-      LimitRange: "limitranges",
-      PodTemplate: "podtemplates",
-      Event: "events",
-      PersistentVolumeClaim: "persistentvolumeclaims",
-      PersistentVolume: "persistentvolumes", 
-      Secret: "secrets",
-      ConfigMap: "configmaps"
+    const getReadFuncNameFromKind = kind => {
+      if(!kind.includes("V1")) {
+        return kind;
+      }
+      var head = kind.substring(0,1).toLowerCase();
+      var rest = kind.substring(1);
+      return getReadFuncName(head + rest);
     }
-
-    const getListFuncName = resource => "list"+resources[resource][1];
-    const getReadFuncName = resource => "read"+resources[resource][1];
-    const getSingleName = resource => resources[resource][0];
-    const getReadFuncNameFromKind = kind => getReadFuncName(kindmap[kind]);
-
-    const createParentResolver = (resourcelist) => {
-      var resolve = async (obj, args, {graphqlMeshK8s}, info) => {
-        const obj_name = obj.metadata && obj.metadata.name;
-        var namespace = obj.metadata && obj.metadata.namespace;
-        var ownerReferences = obj.metadata && obj.metadata.ownerReferences;
+    const createParentResolver = (thisKind) => {
+      var resolve = async (root, args, context, info) => {
+        graphqlMeshK8s = context.graphqlMeshK8s;
+        console.log("createParentResolver");
+        const obj_name = root.metadata && root.metadata.name;
+        var namespace = root.metadata && root.metadata.namespace;
+        //var ownerReferences = root.metadata && root.metadata.ownerReferences;
+        //if((!ownerReferences) ||(!ownerReferences.length) || (!namespace)) {
+        //  console.log("createParentResolver", obj_name, "No ownerReferences or namespace");
+        //  return null;
+        //}
+        const ownFunc = getReadFuncNameFromKind(thisKind);
+        var _function = graphqlMeshK8s.Query[ownFunc];
+        var me = await _function({ args: {name:obj_name, namespace}, context, info, selectionSet: `{metadata {name namespace ownerReferences{name kind}}}` });
+        var ownerReferences = me.metadata && me.metadata.ownerReferences;
         if((!ownerReferences) ||(!ownerReferences.length) || (!namespace)) {
           console.log("createParentResolver", obj_name, "No ownerReferences or namespace");
           return null;
         }
-        var name = ownerReferences[0].name;
-        const kind = ownerReferences[0].kind;
 
-        var resolverRequirements = { items: {metadata: { name: true, namespace: true, labels: true, ownerReferences: {name: true}}}};
-        var mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
+        console.log("me: ", JSON.stringify(me))
+        var name = me.metadata.ownerReferences[0].name;
+        const kind = me.metadata.ownerReferences[0].kind;
 
-        const readfn = getReadFuncNameFromKind(kind);
-        var _function = graphqlMeshK8s.api[readfn];
-        var values = await _function({ name, namespace });
-        return values;
+        const parentFunc = getReadFuncNameFromKind(kind);
+        console.log("ownerReference", name, kind, parentFunc);
+        var _function = graphqlMeshK8s.Query[parentFunc];
+
+        var value = await _function({ root, args: {name, namespace}, context, info });
+        value.__typename = kind;
+        return value;
       };
       var selectionSet = `{ metadata { name namespace ownerReferences { name kind }}}`;
       return { resolve, selectionSet };
-    }
-    const createChildrenResolver = (resource) => {
-      var resolve = async (obj, args, {graphqlMeshK8s}, info) => {
+    };
+    const createChildrenResolver = (childFunc) => {
+      var resolve = async (root, args, context, info) => {
+        graphqlMeshK8s = context.graphqlMeshK8s;
         console.log("createChildrenResolver");
-        var namespace = obj.metadata && obj.metadata.namespace;
-        var name = obj.metadata && obj.metadata.name;
+        var namespace = root.metadata && root.metadata.namespace;
+        var name = root.metadata && root.metadata.name;
         if((!name) || (!namespace)) {
           console.log("createChildrenResolver", name, "No name or namespace")
           return { items: [] };
         }
         //console.log(name, namespace);
-        var resolverRequirements = { items: {metadata: { name: true, namespace: true, labels: true, ownerReferences: {name: true}}}};
-        var mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
+        //var resolverRequirements = { items: {metadata: { name: true, namespace: true, labels: true, ownerReferences: {name: true}}}};
+        //var mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
         //console.log("createChildrenResolver", JSON.stringify(mergedFields));
 
-        const listfn = getListFuncName(resource);
-        //console.log("createChildrenResolver", "listfunction", listfn);
-        var _function = graphqlMeshK8s.api[listfn];
-        var list = await _function({ namespace }, mergedFields);
+        var _function = graphqlMeshK8s.Query[childFunc];
+        var list_ownerRef = await _function({ args: {namespace}, context, info, selectionSet: `{items {metadata{name namespace ownerReferences{name}}}}` });
+        var list_objects = await _function({ args: {namespace}, context, info});
         //console.log("children base", JSON.stringify(list.items));
-        var returnItems = list.items.filter(elem => {
+        var names = list_ownerRef.items.filter(elem => {
           var ownerReferences = elem.metadata && elem.metadata.ownerReferences;
           if((!ownerReferences) || (!ownerReferences.length)) {
             return false;
           }
-          return name == ownerReferences[0].name; //TOBE: this must be [0].name
-        }); 
-        list.items = returnItems;
+          return name == ownerReferences[0].name;
+        }).map(elem => elem.metadata.name);
+
+        var items = list_objects.items.filter(elem => {
+          return names.includes(elem.metadata && elem.metadata.name);
+        });
+
         //console.log(list);
-        return list;
+        return {items};
       };
       var selectionSet = `{ metadata {name namespace}}`;
       return { resolve, selectionSet };
     }
-    const createConnectingResolver = (resource) => {
-      var resolve = async (obj, args, { graphqlMeshK8s }, info) => {
-        console.log("createConnectingResolver");
-        var namespace = obj.metadata && obj.metadata.namespace;
-        var selector = obj.spec && obj.spec.selector;
-        if((!selector) || (!namespace)) {
-          console.log("createConnectingResolver FAILED: ", "selector", selector, "namespace", namespace);
-          return { items: [] };
-        }
+    const createConnectedResolver = (thisKind, connectedFunc) => {
+      var resolve = async (obj, args, context, info) => {
+        graphqlMeshK8s = context.graphqlMeshK8s;
 
-        const listfn = getListFuncName(resource);
-        var _function = graphqlMeshK8s.api[listfn];
-        //var labelSelector = Object.keys(selector).map(key => key+"="+selector[key]).join(",");
-        var resolverRequirements = { items: { metadata: {name: true, namespace: true, labels: true, ownerReferences: {name: true}}}};
-        var mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
-        console.log(JSON.stringify(mergedFields));
-        var list = await _function({ namespace }, mergedFields);
-        console.log("connecting base", JSON.stringify(list.items));
-        //console.log("selector", selector);
-        var returnItems = list.items.filter(elem => {
-          var labels = elem.metadata.labels;
-          return Object.keys(selector).reduce((result, key) => {
-            return result && (selector[key] == labels[key])
-          }, true)
-        });
-        list.items = returnItems;
-        return list;
-      }
-      var selectionSet = `{ metadata { name namespace } spec {selector} }`;
-      return { resolve, selectionSet };
-    }
-    const createConnectedResolver = (resource) => {
-      var resolve = async (obj, args, { graphqlMeshK8s }, info) => {
         console.log("createConnectedResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
-        var labels = obj.metadata && obj.metadata.labels;
+        var name = obj.metadata && obj.metadata.name;
+
+        const ownFunc = getReadFuncNameFromKind(thisKind);
+        var _function = graphqlMeshK8s.Query[ownFunc];
+        var me = await _function({ args: {name, namespace}, context, info, selectionSet: `{metadata{name labels}}` });
+
+        var labels = me.metadata && me.metadata.labels;
         if((!labels) || (!namespace)) {
           return { items: [] };
         }
 
-        const listfn = getListFuncName(resource);
-        var _function = graphqlMeshK8s.api[listfn];
-        var resolverRequirements = { items: {metadata: {name: true, namespace: true}, spec: {selector: true }}};
-        var mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
-        var list = await _function({ namespace }, mergedFields);
-        console.log("connected base", JSON.stringify(list.items));
-        var returnItems = list.items.filter(elem => {
+        var _function = graphqlMeshK8s.Query[connectedFunc];
+        //var resolverRequirements = { items: {metadata: {name: true, namespace: true}, spec: {selector: true }}};
+        //var mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
+        var list_selectors = await _function({ args: {namespace}, context, info, selectionSet: `{items{metadata{name namespace} spec {selector}}}` });
+        var list_objects = await _function({ args: {namespace}, context, info});
+        console.log("connected base", JSON.stringify(list_selectors.items));
+        var names = list_selectors.items.filter(elem => {
           var selector = elem.spec && elem.spec.selector;
           //console.log("selector", selector);
           if(!selector) {
@@ -665,168 +836,180 @@ data:
           return Object.keys(selector).reduce((result, key) => {
             return result && (selector[key] == labels[key])
           }, true)
+        }).map(elem => elem.metadata.name);
+
+        var items = list_objects.items.filter(elem => {
+          return names.includes(elem.metadata && elem.metadata.name);
         });
-        list.items = returnItems;
-        return list;
+        return {items};
       }
       var selectionSet = `{ metadata { name namespace labels }}`;
       return { resolve, selectionSet };
     }
-    const createMountingResolver = () => {
-      var resolve = async (obj, args, {graphqlMeshK8s}, info) => {
-        console.log("createMountingResolver");
+    const createConnectingResolver = (listfn) => {
+      var resolve = async (obj, args, context, info) => {
+        graphqlMeshK8s = context.graphqlMeshK8s;
+
+        console.log("createConnectingResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
-        var volumes = obj.spec && obj.spec.volumes;
-        if((!volumes) ||(!volumes.length) || (!namespace)) {
-          return [];
+        var selector = obj.spec && obj.spec.selector;
+        if((!selector) || (!namespace)) {
+          console.log("createConnectingResolver FAILED: ", "selector", selector, "namespace", namespace);
+          return { items: [] };
         }
-        var promises = volumes.map(elem => {
+
+        var _function = graphqlMeshK8s.Query[listfn];
+        var list_selectors = await _function({ args: {namespace}, context, info, selectionSet: `{ metadata { name } spec {selector} }`});
+        var list_objects = await _function({ args: {namespace}, context, info});
+        console.log("connecting base", JSON.stringify(list_objects.items));
+        // var list_selectors = [], list_objects = [];
+        //console.log("selector", selector);
+        var names = list_selectors.items.filter(elem => {
+          var labels = elem.metadata.labels;
+          return Object.keys(selector).reduce((result, key) => {
+            return result && (selector[key] == labels[key])
+          }, true)
+        }).map(elem=> elem.metadata.name);
+        var items = list_objects.items.filter(elem => {
+          return names.includes(elem.metadata && elem.metadata.name);
+        });
+        return {items};
+      }
+      var selectionSet = `{ metadata { name namespace } spec {selector} }`;
+      return { resolve, selectionSet };
+    }
+    const createMountingResolver = (thisKind) => {
+      var resolve = async (root, args, context, info) => {
+        graphqlMeshK8s = context.graphqlMeshK8s;
+        
+        console.log("createMountingResolver");
+        var namespace = root.metadata && root.metadata.namespace;
+        var name = root.metadata && root.metadata.name;
+
+        const ownFunc = getReadFuncNameFromKind(thisKind);
+        var _function = graphqlMeshK8s.Query[ownFunc];
+        var me = await _function({ args: {name, namespace}, context, info, selectionSet: `{ metadata { name namespace } spec {volumes {configMap {name} persistentVolumeClaim {claimName} secret {secretName}}}}` });
+
+        var volumes = me.spec && me.spec.volumes;
+        if((!volumes) ||(!volumes.length) || (!namespace)) {
+          return {items:[]};
+        }
+        //volumes = [];
+        var items = volumes.map(async elem => {
+          var __typename, name;
           if(elem.configMap) {
-            return graphqlMeshK8s.api.readCoreV1NamespacedConfigMap({name: elem.configMap.name, namespace });
+            __typename = "ConfigMap";
+            name = elem.configMap.name;
           } else if(elem.persistentVolumeClaim) {
-            return graphqlMeshK8s.api.readCoreV1NamespacedPersistentVolumeClaim({name: elem.persistentVolumeClaim.claimName, namespace});
+            __typename = "PersistentVolumeClaim";
+            name = elem.persistentVolumeClaim.claimName;
           } else if(elem.secret) {
-            return graphqlMeshK8s.api.readCoreV1NamespacedSecret({name: elem.secret.secretName, namespace});
+            __typename = "Secret";
+            name = elem.secret.secretName;
           }
+          console.log("__typename: ", __typename);
+          if(__typename) {
+            var rtn = await graphqlMeshK8s.Query[__typename]({args: {name , namespace}, context, info });
+            return {...rtn, __typename};
+          }
+          return null;
         }).filter(elem => elem != null);
-        return await Promise.all(promises);
+        return await Promise.all(items);
       };
       var selectionSet = `{ metadata { name namespace } spec {volumes {configMap {name} persistentVolumeClaim {claimName} secret {secretName}}}}`;
       return { resolve, selectionSet };
     }
-    const createEventResolver = () => {
-      var resolve = async (obj, args, {graphqlMeshK8s}, info) => {
+    const createEventResolver = (thisKind, eventFunc) => {
+      var resolve = async (obj, args, context, info) => {
+        graphqlMeshK8s = context.graphqlMeshK8s;
+
         console.log("createEventResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         var name = obj.metadata && obj.metadata.name;
-        var kind = obj.kind;
-        //console.log(namespace, name, kind);
+
+        var kind = thisKind;
         if((!name) /*|| (!kind)*/ || (!namespace)) {
           return { items: [] };
         }
-        const resolverRequirements = { items: { metadata: {name: true, namespace: true}, involvedObject: { kind: true, name: true }}};
-        const mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
-        const events = await graphqlMeshK8s.api.listCoreV1NamespacedEvent({ namespace }, mergedFields);
-        var returnEvents = events.items.filter(elem => {
+        //const resolverRequirements = { items: { metadata: {name: true, namespace: true}, involvedObject: { kind: true, name: true }}};
+        //const mergedFields = { fields: merge(graphqlFields(info), resolverRequirements) };
+        const events_involved = await graphqlMeshK8s.Query[eventFunc]({ args: {namespace}, context, info, selectionSet: `{items{metadata{name namespace} involvedObject{kind name}}}` });
+        const events = await graphqlMeshK8s.Query[eventFunc]({ args: {namespace}, context, info });
+        var names = events_involved.items.filter(elem => {
           var involvedObject = elem.involvedObject;
-          console.log(involvedObject);
-          return (involvedObject.name == name) /*&& (involvedObject.kind == kind)*/;
+          //console.log(involvedObject);
+          return (involvedObject.name == name) && (involvedObject.kind == kind);
+        }).map(elem => elem.metadata.name);
+
+        var items = events.items.filter(elem => {
+          return names.includes(elem.metadata && elem.metadata.name);
         });
-        events.items = returnEvents;
-        return events;
+        return {items};
       };
       var selectionSet = `{ kind metadata { namespace name }}`;
       return { resolve, selectionSet };
     }
-    const createNamespaceResolver = () => {
-      var resolve = async (obj, args, {graphqlMeshK8s}, info) => {
+    const createNamespaceResolver = (namespaceFunc) => {
+      var resolve = async (obj, args, context, info) => {
+        graphqlMeshK8s = context.graphqlMeshK8s;
         console.log("createNamespaceResolver");
         var namespace = obj.metadata && obj.metadata.namespace;
         if(!namespace) {
           return [];
         }
-        return await graphqlMeshK8s.api.readCoreV1Namespace({ name: namespace });
+        return await graphqlMeshK8s.Query[namespaceFunc]({ args: {name: namespace}, context, info });
       };
       var selectionSet = `{ metadata { namespace }}`;
       return { resolve, selectionSet };
     }
 
-    const createRootResolverMultiple = (resource) => {
-      const listfn = getListFuncName(resource);
-      return async (obj, args, { graphqlMeshK8s }, info) => {
-        return await graphqlMeshK8s.api[listfn](args);
-      };
-    }
-
-    const createRootResolverSingle = (resource) => {
-      const readfn = getReadFuncName(resource);
-      return async (obj, args, { graphqlMeshK8s }, info) => {
-        const value = await graphqlMeshK8s.api[readfn](args  /*, {fields}*/);
-        console.log(JSON.stringify(value));
-        return value;
-      };
-    }
     const resolvers = {
       Pod: {
-        parent: createParentResolver("replicasets"),
-        connected: createConnectedResolver("services"),
-        mounting: createMountingResolver(),
-        namespace: createNamespaceResolver(),
-        events: createEventResolver()
-
+        //parentReplicaSet: createParentResolver("ReplicaSet"),
+        //parentDaemonSet: createParentResolver("DaemonSet"),
+        //parentStatefulSet: createParentResolver("StatefulSet"),
+        parent: createParentResolver("Pod"),
+        connected: createConnectedResolver("Pod", "Services"),
+        namespace: createNamespaceResolver("Namespace"),
+        events: createEventResolver("Pod", "listCoreV1NamespacedEvent"),
+        mounting: createMountingResolver("Pod")
       },
       ReplicaSet: {
-        parent: createParentResolver("deployments"),
-        children: createChildrenResolver("pods"),
-        namespace: createNamespaceResolver(),
-        events: createEventResolver()
-      },
-      StatefulSet: {
-        children: createChildrenResolver("pods"),
-        namespace: createNamespaceResolver(),
-        events: createEventResolver()
-      },
-      DaemonSet: {
-        children: createChildrenResolver("pods"),
-        namespace: createNamespaceResolver(),
-        events: createEventResolver()
+        parent: createParentResolver("ReplicaSet"),
+        children: createChildrenResolver("Pods"),
+        namespace: createNamespaceResolver("Namespace"),
+        events: createEventResolver("ReplicaSet", "listCoreV1NamespacedEvent")
       },
       Deployment: {
-        children: createChildrenResolver("replicasets"),
-        namespace: createNamespaceResolver(),
-        events: createEventResolver()
+        children: createChildrenResolver("ReplicaSets"),
+        namespace: createNamespaceResolver("Namespace"),
+        events: createEventResolver("Deployment", "listCoreV1NamespacedEvent")
       },
-      Service: {
-        connecting: createConnectingResolver("pods"),
-        namespace: createNamespaceResolver(),
-        events: createEventResolver()
+      DaemonSet: {
+        children: createChildrenResolver("Pods"),
+        namespace: createNamespaceResolver("Namespace"),
+        events: createEventResolver("DaemonSet", "listCoreV1NamespacedEvent")
       },
-      K8sMounted: {
-        __resolveType(obj, context, info){
-          if(obj.kind == "ConfigMap"){
-            return 'ConfigMap';
-          }
-
-          if(obj.kind == "PersistentVolumeClaim"){
-            return 'PersistentVolumeClaim';
-          }
-
-          if(obj.kind == "Secret"){
-            return 'Secret';
-          }
-          return null;
-        }
+      StatefulSet: {
+        children: createChildrenResolver("Pods"),
+        namespace: createNamespaceResolver("Namespace"),
+        events: createEventResolver("StatefulSet", "listCoreV1NamespacedEvent")
       },
       K8sPodParent: {
         __resolveType(obj, context, info){
-          if(obj.kind == "ReplicaSet"){
-            return 'ReplicaSet';
-          }
-
-          if(obj.kind == "DaemonSet"){
-            return 'DaemonSet';
-          }
-
-          if(obj.kind == "StatefulSet"){
-            return 'StatefulSet';
-          }
-
-          if(obj.kind == "Node"){
-            return 'Node';
-          }
-          return null;
+          console.log("obj:", JSON.stringify(obj));
+          return obj.__typename;
         }
+      },
+      Service: {
+        connecting: createConnectingResolver("Pods")
+      },
+      K8sMounted: {
+        __resolveType(obj, context, info){
+          return obj.__typename;
+        }
+      },
+      Node: {
       }
     };
-    var addonQueryResolver = {};
-    for(rscs in resources) {
-      addonQueryResolver[rscs] = createRootResolverMultiple(rscs);
-      addonQueryResolver[getSingleName(rscs)] = createRootResolverSingle(rscs);
-    }
-    for(key in abbreviations) {
-      addonQueryResolver[abbreviations[key]+'s'] = createRootResolverMultiple(key);
-      addonQueryResolver[abbreviations[key]] = createRootResolverSingle(key);
-    }
-    resolvers.Query = addonQueryResolver;
     module.exports = { resolvers };
-
