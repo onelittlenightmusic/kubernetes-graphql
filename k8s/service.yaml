@@ -10,8 +10,16 @@ spec:
     - protocol: TCP
       port: 4000
       targetPort: 4000
-      name: mesh
+      name: mesh2
     - protocol: TCP
       port: 8001
       targetPort: 8001
       name: proxy
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      name: otg
+    - protocol: TCP
+      port: 3999
+      targetPort: 3999
+      name: mesh

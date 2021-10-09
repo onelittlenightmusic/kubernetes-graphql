@@ -9,7 +9,11 @@ services:
     - /var/run/docker.sock:/var/run/docker.sock:rw
     - ./chmod.sh:/docker-entrypoint.d/chmod.sh:rw
   mesh-svc:
-    image: hiroyukiosaki/graphql-mesh:v0.2.11-all
+    image: hiroyukiosaki/kubernetes-graphql:latest
+    build:
+      context: ./
+      args:
+        tag: latest-all-alpine
     ports:
     - "4000:4000"
     volumes:

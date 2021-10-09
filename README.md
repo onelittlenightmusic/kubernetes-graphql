@@ -51,7 +51,7 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
   ```graphql
   {
     # pods or pos
-    pods(namespace: "default") {
+    Pods(namespace: "default") {
       items {
         metadata {
           name
@@ -85,7 +85,7 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
   ```graphql
   {
     # pods or pos
-  	pods(
+  	Pods(
       namespace: "default", 
       labelSelector: "run=mesh"
     ) {
@@ -126,7 +126,7 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
 
   ```graphql
   query q {
-    pods(namespace: "default") {
+    Pods(namespace: "default") {
       items {
         metadata {
           name
@@ -181,7 +181,7 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
 
   ```graphql
   query {
-    pods(namespace: "default") { # Pod
+    Pods(namespace: "default") { # Pod
       items {
         metadata {
           name
@@ -353,7 +353,7 @@ The query methods follow [Kubernetes Resource Type](https://kubernetes.io/docs/r
 |          `csidrivers`||
 |          `csinodes`||
 |          `volumeattachments`||
-|          `pods(namespace: String!) `|`po`|
+|          `Pods(namespace: String!) `|`po`|
 |          `services(namespace: String!)`|`svc`|
 |          `ingresses(namespace: String!)`|`ing`|
 |          `replicasets(namespace: String!)`|`rs`|

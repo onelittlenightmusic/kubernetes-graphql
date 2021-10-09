@@ -1,0 +1,76 @@
+query q {
+  Pods(namespace: "default") {
+    items {
+      __typename
+      metadata {
+        name
+        namespace
+        labels
+      }
+      parent {
+        __typename
+        ... on ReplicaSet {
+          metadata {
+            name
+            namespace
+          }
+          parent {
+            __typename
+            metadata {
+              name
+            }
+          }
+          children {
+            items {
+              __typename
+              metadata {
+                name
+                labels
+              }
+            }
+          }
+        }
+      }
+      connected {
+        items {
+          __typename
+          metadata {
+            name
+          }
+        }
+      }
+      namespace {
+        __typename
+        metadata {
+          name
+        }
+      }
+      mounting {
+        __typename
+        ... on Secret {
+					metadata {name}          
+        }
+        ... on ConfigMap {
+          metadata {
+            name
+            namespace
+          }
+        }
+      }
+      # events {
+      #   items {
+      #   	metadata {name}
+      #     message
+      #   }
+      # }
+    }
+  }
+  Services(namespace: "default") {
+    items {
+      __typename
+      metadata {
+        name
+      }
+    }
+  }
+}
