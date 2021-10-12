@@ -336,49 +336,47 @@ kubectl delete -f k8s
 
 The query methods follow [Kubernetes Resource Type](https://kubernetes.io/docs/reference/kubectl/overview/#resource-types).
 
-| Query | Abbreviations |
-|-|-|
-|          `nodes`|`no`|
-|          `namespaces`|`ns`|
-|          `clusterrolebindings`||
-|          `clusterroles`||
-|          `storageclasses`|`sc`|
-|          `mutatingwebhookconfigurations`||
-|          `validatingwebhookconfigurations`||
-|          `certificatesigningrequests`|`csr`|
-|          `podsecuritypolicies`|`psp`|
-|          `componentstatuses`|`cs`|
-|          `customresourcedefinitions`|`crd`|
-|          `priorityclasses`|`pc`|
-|          `csidrivers`||
-|          `csinodes`||
-|          `volumeattachments`||
-|          `Pods(namespace: String!) `|`po`|
-|          `services(namespace: String!)`|`svc`|
-|          `ingresses(namespace: String!)`|`ing`|
-|          `replicasets(namespace: String!)`|`rs`|
-|          `deployments(namespace: String!)`|`deploy`|
-|          `daemonsets(namespace: String!)`|`ds`|
-|          `statefulsets(namespace: String!)`|`sts`|
-|          `replicationcontrollers(namespace: String!)`|`rc`|
-|          `horizontalpodautoscalers(namespace: String!)`|`hpa`|
-|          `cronjobs(namespace: String!)`|`cj`|
-|          `jobs(namespace: String!)`||
-|          `rolebindings(namespace: String!)`||
-|          `roles(namespace: String!)`||
-|          `serviceaccounts(namespace: String!)`|`sa`|
-|          `resourcequotas(namespace: String!)`|`quota`|
-|          `endpoints(namespace: String!)`|`ep`|
-|          `controllerrevisions(namespace: String!)`|`cr`|
-|          `networkpolicies(namespace: String!)`|`netpol`|
-|          `poddisruptionbudgets(namespace: String!)`|`pdb`|
-|          `limitranges(namespace: String!)`|`limits`|
-|          `podtemplates(namespace: String!)`||
-|          `events(namespace: String!)`|`ev`|
-|          `persistentvolumeclaims(namespace: String!)`|`pvc`|
-|          `persistentvolumes(namespace: String!)`|`pv`|
-|          `secrets(namespace: String!)`||
-|          `configmaps(namespace: String!)`|`cm`|
+- `nodes`
+- `namespaces`
+- `clusterrolebindings`
+- `clusterroles`
+- `storageclasses`
+- `mutatingwebhookconfigurations`
+- `validatingwebhookconfigurations`
+- `certificatesigningrequests`
+- `podsecuritypolicies`
+- `componentstatuses`
+- `customresourcedefinitions`
+- `priorityclasses`
+- `csidrivers`
+- `csinodes`
+- `volumeattachments`
+- `Pods(namespace: String!) `
+- `services(namespace: String!)`
+- `ingresses(namespace: String!)`
+- `replicasets(namespace: String!)`
+- `deployments(namespace: String!)`
+- `daemonsets(namespace: String!)`
+- `statefulsets(namespace: String!)`
+- `replicationcontrollers(namespace: String!)`
+- `horizontalpodautoscalers(namespace: String!)`
+- `cronjobs(namespace: String!)`
+- `jobs(namespace: String!)`
+- `rolebindings(namespace: String!)`
+- `roles(namespace: String!)`
+- `serviceaccounts(namespace: String!)`
+- `resourcequotas(namespace: String!)`
+- `endpoints(namespace: String!)`
+- `controllerrevisions(namespace: String!)`
+- `networkpolicies(namespace: String!)`
+- `poddisruptionbudgets(namespace: String!)`
+- `limitranges(namespace: String!)`
+- `podtemplates(namespace: String!)`
+- `events(namespace: String!)`
+- `persistentvolumeclaims(namespace: String!)`
+- `persistentvolumes(namespace: String!)`
+- `secrets(namespace: String!)`
+- `configmaps(namespace: String!)`
 
 # Original resolvers (`parent/children`, `connecting/connected`, `mounting`, `namespace` and `events`)
 
