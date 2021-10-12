@@ -12,7 +12,7 @@ data:
   init.sh: |-
     #!/bin/bash
     while true; do
-      yarn mesh serve && break
+      yarn mesh dev && break
     done
   .meshrc.yaml: |-
     sources:
@@ -83,6 +83,18 @@ data:
               to:
                 type: Query
                 field: Namespaces
+            - from:
+                type: Query
+                field: ioK8sApiCoreV1Node
+              to:
+                type: Query
+                field: Node
+            - from: 
+                type: Query
+                field: ioK8sApiCoreV1NodeList
+              to:
+                type: Query
+                field: Nodes
             - from: 
                 type: Query
                 field: ioK8sApiRbacV1ClusterRoleBinding
