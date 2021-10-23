@@ -336,47 +336,46 @@ kubectl delete -f k8s
 
 The query methods follow [Kubernetes Resource Type](https://kubernetes.io/docs/reference/kubectl/overview/#resource-types).
 
-- `nodes`
-- `namespaces`
-- `clusterrolebindings`
-- `clusterroles`
-- `storageclasses`
-- `mutatingwebhookconfigurations`
-- `validatingwebhookconfigurations`
-- `certificatesigningrequests`
-- `podsecuritypolicies`
-- `componentstatuses`
-- `customresourcedefinitions`
-- `priorityclasses`
-- `csidrivers`
-- `csinodes`
-- `volumeattachments`
+- `Nodes`
+- `Namespaces`
 - `Pods(namespace: String!) `
-- `services(namespace: String!)`
-- `ingresses(namespace: String!)`
-- `replicasets(namespace: String!)`
-- `deployments(namespace: String!)`
-- `daemonsets(namespace: String!)`
-- `statefulsets(namespace: String!)`
-- `replicationcontrollers(namespace: String!)`
-- `horizontalpodautoscalers(namespace: String!)`
-- `cronjobs(namespace: String!)`
-- `jobs(namespace: String!)`
-- `rolebindings(namespace: String!)`
-- `roles(namespace: String!)`
-- `serviceaccounts(namespace: String!)`
-- `resourcequotas(namespace: String!)`
-- `endpoints(namespace: String!)`
-- `controllerrevisions(namespace: String!)`
-- `networkpolicies(namespace: String!)`
-- `poddisruptionbudgets(namespace: String!)`
-- `limitranges(namespace: String!)`
-- `podtemplates(namespace: String!)`
-- `events(namespace: String!)`
-- `persistentvolumeclaims(namespace: String!)`
-- `persistentvolumes(namespace: String!)`
-- `secrets(namespace: String!)`
-- `configmaps(namespace: String!)`
+- `Services(namespace: String!)`
+- `Ingresses(namespace: String!)`
+- `ReplicaSets(namespace: String!)`
+- `Deployments(namespace: String!)`
+- `DaemonSets(namespace: String!)`
+- `StatefulSets(namespace: String!)`
+- `ReplicationControllers(namespace: String!)`
+- `HorizontalPodAutoscalers(namespace: String!)`
+- `ClusterRoleBindings`
+- `ClusterRoles`
+- `StorageClasses`
+- `PodSecurityPolicies`
+- `ComponentStatuses`
+- `CustomResourceDefinitions`
+- `PriorityClasses`
+- `CSIDrivers`
+- `CSINodes`
+- `VolumeAttachments`
+- `CronJobs(namespace: String!)`
+- `Jobs(namespace: String!)`
+- `RoleBindings(namespace: String!)`
+- `Roles(namespace: String!)`
+- `ServiceAccounts(namespace: String!)`
+- `ResourceQuotas(namespace: String!)`
+- `Endpoints(namespace: String!)`
+- `ControllerRevisions(namespace: String!)`
+- `NetworkPolicies(namespace: String!)`
+- `PodDisruptionBudgets(namespace: String!)`
+- `LimitRanges(namespace: String!)`
+- `PodTemplates(namespace: String!)`
+- `Events(namespace: String!)`
+- `PersistentVolumeClaims(namespace: String!)`
+- `PersistentVolumes(namespace: String!)`
+- `Secrets(namespace: String!)`
+- `ConfigMaps(namespace: String!)`
+
+etc.
 
 # Original resolvers (`parent/children`, `connecting/connected`, `mounting`, `namespace` and `events`)
 
