@@ -576,44 +576,49 @@ data:
         extend type Secret implements K8sResourceInterface
         union K8sMounted = ConfigMap | PersistentVolumeClaim | Secret
         union K8sPodParent = ReplicaSet | DaemonSet | StatefulSet | Node
-        
-    #     extend type Pod implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-    #       parent: K8sPodParent
-    #       connected: ServiceList
-    #       mounting: [K8sMounted]
-    #       namespace: Namespace
-    #       events: EventList
-    #     }
-    #     extend type ReplicaSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-    # #       parent: Deployment
-    #       children: PodList
-    # #       namespace: Namespace
-    # #       events: EventList
-    #     }
-    #     extend type Deployment implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-    #       children: ReplicaSetList
-    #       namespace: Namespace
-    #       events: EventList
-    #     }
-    #     extend type Service implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-    #       connecting: PodList
-    #       namespace: Namespace
-    #       events: EventList
-    #     }
-    #     extend type DaemonSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-    # #       namespace: Namespace
-    # #       events: EventList
-    #       children: PodList
-    #     }
-    #     extend type StatefulSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-    # #       namespace: Namespace
-    # #       events: EventList
-    #       children: PodList
-    #     }
-
+        extend type Pod implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+          parent: K8sPodParent
+          connected: ServiceList
+          namespace: Namespace
+          events: EventList
+          mounting: [K8sMounted]
+        }
+        extend type Deployment implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+          children: ReplicaSetList
+          namespace: Namespace
+          events: EventList
+        }
+        extend type ReplicaSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+          children: PodList
+          parent: Deployment
+          namespace: Namespace
+          events: EventList
+        }
+        extend type DaemonSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+          children: PodList
+          namespace: Namespace
+          events: EventList
+        }
+        extend type StatefulSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+          children: PodList
+          namespace: Namespace
+          events: EventList
+        }
+        extend type Service implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
+          connecting: PodList
+          namespace: Namespace
+          events: EventList
+        }
+    additionalResolvers:
+      - ./additional-resolvers.js
     serve:
+      exampleQuery: example-query.graphql
       hostname: 0.0.0.0
-      port: 3999
+      port: 4000
+
+    # serve:
+    #   hostname: 0.0.0.0
+    #   port: 3999
   example-query.graphql: |-
     query q {
       Pods(namespace: "default") {
@@ -685,52 +690,13 @@ data:
       }
     }
 
-  .meshrc2.yaml: |-
-    sources:
-    - name: graphqlMeshK8s
-      handler:
-        graphql:
-          endpoint: http://mesh-svc:3999/graphql
-    additionalTypeDefs: |
-        extend type Pod implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-          parent: K8sPodParent
-          connected: ServiceList
-          namespace: Namespace
-          events: EventList
-          mounting: [K8sMounted]
-        }
-        extend type Deployment implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-          children: ReplicaSetList
-          namespace: Namespace
-          events: EventList
-        }
-        extend type ReplicaSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-          children: PodList
-          parent: Deployment
-          namespace: Namespace
-          events: EventList
-        }
-        extend type DaemonSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-          children: PodList
-          namespace: Namespace
-          events: EventList
-        }
-        extend type StatefulSet implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-          children: PodList
-          namespace: Namespace
-          events: EventList
-        }
-        extend type Service implements K8sNamespacedResourceInterface & K8sResourceInterface & K8sEventOwnerInterface {
-          connecting: PodList
-          namespace: Namespace
-          events: EventList
-        }
-    additionalResolvers:
-      - ./additional-resolvers.js
-    serve:
-      exampleQuery: example-query.graphql
-      hostname: 0.0.0.0
-      port: 4000
+  # .meshrc2.yaml: |-
+  #   sources:
+  #   - name: graphqlMeshK8s
+  #     handler:
+  #       graphql:
+  #         endpoint: http://mesh-svc:3999/graphql
+  #   additionalTypeDefs: |
   additional-resolvers.js: |-
     const { print } = require('graphql');
     //const graphqlFields = require("graphql-fields");
@@ -977,9 +943,6 @@ data:
 
     const resolvers = {
       Pod: {
-        //parentReplicaSet: createParentResolver("ReplicaSet"),
-        //parentDaemonSet: createParentResolver("DaemonSet"),
-        //parentStatefulSet: createParentResolver("StatefulSet"),
         parent: createParentResolver("Pod"),
         connected: createConnectedResolver("Pod", "Services"),
         namespace: createNamespaceResolver("Namespace"),
