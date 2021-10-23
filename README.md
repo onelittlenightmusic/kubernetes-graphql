@@ -55,6 +55,7 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
       items {
         metadata {
           name
+          namespace
         }
         status {
           startTime
@@ -130,6 +131,7 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
       items {
         metadata {
           name
+          namespace
         }
         parent {
           # ReplicaSets (Pod's parent)
@@ -185,6 +187,7 @@ This sample exposes GraphQL endpoint by using only API management tool [GraphQL 
       items {
         metadata {
           name
+          namespace
         }
         status {
           startTime

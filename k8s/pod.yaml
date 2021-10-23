@@ -15,7 +15,6 @@ spec:
     resources: {}
     ports:
     - containerPort: 4000
-    # - containerPort: 3999
     volumeMounts:
     - mountPath: /work/.meshrc.yaml
       name: meshrc-cm
@@ -33,19 +32,19 @@ spec:
     # - sh
     # - -c
     # - sleep 3600
-  - image: hiroyukiosaki/openapi-to-graphql:latest
-    name: otg
-    stdin: true 
-    tty: true 
-    command:
-    - sh
-    - initOtg.sh
-    volumeMounts:
-    - mountPath: /initOtg.sh
-      name: meshrc-cm
-      subPath: initOtg.sh
-    ports:
-    - containerPort: 3000
+  # - image: hiroyukiosaki/openapi-to-graphql:latest
+  #   name: otg
+  #   stdin: true 
+  #   tty: true 
+  #   command:
+  #   - sh
+  #   - initOtg.sh
+  #   volumeMounts:
+  #   - mountPath: /initOtg.sh
+  #     name: meshrc-cm
+  #     subPath: initOtg.sh
+  #   ports:
+  #   - containerPort: 3000
   - image: bitnami/kubectl:latest
     name: proxy
     ports:
