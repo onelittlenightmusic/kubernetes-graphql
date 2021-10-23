@@ -10,5 +10,6 @@ test-redeploy:
 	-@kubectl delete -f k8s/pod.yaml
 	-@kubectl apply -f k8s/pod.yaml
 	-@kubectl apply -f k8s/meshrc-cm.yaml
+	kubectl logs mesh mesh -f
 
 	

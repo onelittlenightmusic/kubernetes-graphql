@@ -19,7 +19,3 @@ spec:
       port: 3000
       targetPort: 3000
       name: otg
-    - protocol: TCP
-      port: 3999
-      targetPort: 3999
-      name: mesh

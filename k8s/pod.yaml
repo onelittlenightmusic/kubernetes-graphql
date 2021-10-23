@@ -14,25 +14,12 @@ spec:
     tty: true 
     resources: {}
     ports:
-    - containerPort: 3999
+    - containerPort: 4000
+    # - containerPort: 3999
     volumeMounts:
     - mountPath: /work/.meshrc.yaml
       name: meshrc-cm
       subPath: .meshrc.yaml
-    - mountPath: /work/init.sh
-      name: meshrc-cm
-      subPath: init.sh
-  - image: hiroyukiosaki/graphql-mesh:latest-all-alpine
-    name: mesh2
-    stdin: true 
-    tty: true 
-    resources: {}
-    ports:
-    - containerPort: 4000
-    volumeMounts:
-    - mountPath: /work/.meshrc.yaml
-      name: meshrc-cm
-      subPath: .meshrc2.yaml
     - mountPath: /work/init.sh
       name: meshrc-cm
       subPath: init.sh
