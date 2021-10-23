@@ -15,7 +15,7 @@ spec:
       port: 8001
       targetPort: 8001
       name: proxy
-    - protocol: TCP
-      port: 3000
-      targetPort: 3000
-      name: otg
+    # - protocol: TCP
+    #   port: 3000
+    #   targetPort: 3000
+    #   name: otg

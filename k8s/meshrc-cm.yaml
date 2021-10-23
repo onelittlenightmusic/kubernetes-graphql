@@ -4,22 +4,24 @@ metadata:
   creationTimestamp: null
   name: meshrc-cm
 data:
-  initOtg.sh: |-
-    #!/bin/bash
-    while true; do
-      openapi-to-graphql http://mesh-svc:8001/openapi/v2 -uhttp://mesh-svc:8001/ --no-viewer
-    done
+  # initOtg.sh: |-
+  #   #!/bin/bash
+  #   while true; do
+  #     openapi-to-graphql http://mesh-svc:8001/openapi/v2 -uhttp://mesh-svc:8001/ --no-viewer
+  #   done
   init.sh: |-
     #!/bin/bash
     while true; do
+      wget http://mesh-svc:8001/openapi/v2 -O swagger.json
       yarn mesh dev && break
     done
   .meshrc.yaml: |-
     sources:
     - name: graphqlMeshK8s
       handler:
-        graphql:
-          endpoint: http://mesh-svc:3000/graphql
+        openapi:
+          source: /work/swagger.json
+          baseUrl: http://mesh-svc:8001/
       transforms:
         - rename:
             mode: wrap
@@ -61,502 +63,538 @@ data:
               useRegExpForTypes: true
             - from:
                 type: Query
-                field: ioK8sApiCoreV1Pod
+                field: readCoreV1NamespacedPod
               to: 
                 type: Query
                 field: Pod
             - from:
                 type: Query
-                field: ioK8sApiCoreV1PodList
+                field: listCoreV1NamespacedPod
               to: 
                 type: Query
                 field: Pods
             - from:
                 type: Query
-                field: ioK8sApiCoreV1Namespace
+                field: readCoreV1Namespace
               to:
                 type: Query
                 field: Namespace
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1NamespaceList
+                field: listCoreV1Namespace
               to:
                 type: Query
                 field: Namespaces
             - from:
                 type: Query
-                field: ioK8sApiCoreV1Node
+                field: readCoreV1Node
               to:
                 type: Query
                 field: Node
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1NodeList
+                field: listCoreV1Node
               to:
                 type: Query
                 field: Nodes
             - from: 
                 type: Query
-                field: ioK8sApiRbacV1ClusterRoleBinding
+                field: readRbacAuthorizationV1ClusterRoleBinding
               to:
                 type: Query
                 field: ClusterRoleBinding
             - from: 
                 type: Query
-                field: ioK8sApiRbacV1ClusterRoleBindingList
+                field: listRbacAuthorizationV1ClusterRoleBinding
               to:
                 type: Query
                 field: ClusterRoleBindings
             - from: 
                 type: Query
-                field: ioK8sApiRbacV1ClusterRole
+                field: readRbacAuthorizationV1ClusterRole
               to:
                 type: Query
                 field: ClusterRole
             - from: 
                 type: Query
-                field: ioK8sApiRbacV1ClusterRoleList
+                field: listRbacAuthorizationV1ClusterRole
               to:
                 type: Query
                 field: ClusterRoles
             - from: 
                 type: Query
-                field: ioK8sApiStorageV1StorageClass
+                field: readStorageV1StorageClass
               to:
                 type: Query
                 field: StorageClass
             - from: 
                 type: Query
-                field: ioK8sApiStorageV1StorageClassList
+                field: listStorageV1StorageClass
               to:
                 type: Query
                 field: StorageClasses
             - from: 
                 type: Query
-                field: ioK8sApiAdmissionregistrationV1MutatingWebhookConfiguration
+                field: readAdmissionregistrationV1MutatingWebhookConfiguration
               to:
                 type: Query
                 field: MutatingWebhookConfiguration
             - from: 
                 type: Query
-                field: ioK8sApiAdmissionregistrationV1MutatingWebhookConfigurationList
+                field: listAdmissionregistrationV1MutatingWebhookConfiguration
               to:
                 type: Query
                 field: MutatingWebhookConfigurations
             - from: 
                 type: Query
-                field: ioK8sApiAdmissionregistrationV1ValidatingWebhookConfiguration
+                field: readAdmissionregistrationV1ValidatingWebhookConfiguration
               to:
                 type: Query
                 field: ValidatingWebhookConfiguration
             - from: 
                 type: Query
-                field: ioK8sApiAdmissionregistrationV1ValidatingWebhookConfigurationList
+                field: listAdmissionregistrationV1ValidatingWebhookConfiguration
               to:
                 type: Query
                 field: ValidatingWebhookConfigurations
             - from: 
                 type: Query
-                field: ioK8sApiCertificatesV1beta1CertificateSigningRequest
+                field: readCertificatesV1beta1CertificateSigningRequest
               to:
                 type: Query
                 field: CertificateSigningRequest
             - from: 
                 type: Query
-                field: ioK8sApiCertificatesV1beta1CertificateSigningRequestList
+                field: listCertificatesV1beta1CertificateSigningRequest
               to:
                 type: Query
                 field: CertificateSigningRequests
             - from: 
                 type: Query
-                field: ioK8sApiPolicyV1beta1PodSecurityPolicy
+                field: readPolicyV1beta1PodSecurityPolicy
               to:
                 type: Query
                 field: PodSecurityPolicy
             - from: 
                 type: Query
-                field: ioK8sApiPolicyV1beta1PodSecurityPolicyList
+                field: listPolicyV1beta1PodSecurityPolicy
               to:
                 type: Query
                 field: PodSecurityPolicys
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1ComponentStatus
+                field: readCoreV1ComponentStatus
               to:
                 type: Query
                 field: ComponentStatus
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1ComponentStatusList
+                field: listCoreV1ComponentStatus
               to:
                 type: Query
                 field: ComponentStatuses
             - from: 
                 type: Query
-                field: ioK8sApiextensionsApiserverPkgApisApiextensionsV1CustomResourceDefinition
+                field: readextensionsApiserverPkgApisApiextensionsV1CustomResourceDefinition
               to:
                 type: Query
                 field: CustomResourceDefinition
             - from: 
                 type: Query
-                field: ioK8sApiextensionsApiserverPkgApisApiextensionsV1CustomResourceDefinitionList
+                field: listextensionsApiserverPkgApisApiextensionsV1CustomResourceDefinition
               to:
                 type: Query
                 field: CustomResourceDefinitions
             - from: 
                 type: Query
-                field: ioK8sApiSchedulingV1PriorityClass
+                field: readSchedulingV1PriorityClass
               to:
                 type: Query
                 field: PriorityClass
             - from: 
                 type: Query
-                field: ioK8sApiSchedulingV1PriorityClassList
+                field: listSchedulingV1PriorityClass
               to:
                 type: Query
                 field: PriorityClasses
             - from: 
                 type: Query
-                field: ioK8sApiStorageV1CSIDriver
+                field: readStorageV1CSIDriver
               to:
                 type: Query
                 field: CSIDriver
             - from: 
                 type: Query
-                field: ioK8sApiStorageV1CSIDriverList
+                field: listStorageV1CSIDriver
               to:
                 type: Query
                 field: CSIDrivers
             - from: 
                 type: Query
-                field: ioK8sApiStorageV1CSINode
+                field: readStorageV1CSINode
               to:
                 type: Query
                 field: CSINode
             - from: 
                 type: Query
-                field: ioK8sApiStorageV1CSINodeList
+                field: listStorageV1CSINode
               to:
                 type: Query
                 field: CSINodes
             - from: 
                 type: Query
-                field: ioK8sApiStorageV1VolumeAttachment
+                field: readStorageV1VolumeAttachment
               to:
                 type: Query
                 field: VolumeAttachment
             - from: 
                 type: Query
-                field: ioK8sApiStorageV1VolumeAttachmentList
+                field: listStorageV1VolumeAttachment
               to:
                 type: Query
                 field: VolumeAttachments
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1Pod
+                field: readCoreV1Pod
               to:
                 type: Query
                 field: Pod
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1Service
+                field: readCoreV1NamespacedService
               to:
                 type: Query
                 field: Service
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1ServiceList
+                field: listCoreV1NamespacedService
               to:
                 type: Query
                 field: Services
             - from: 
                 type: Query
-                field: ioK8sApiNetworkingV1beta1Ingress
+                field: readNetworkingV1NamespacedIngress
               to:
                 type: Query
                 field: Ingress
             - from: 
                 type: Query
-                field: ioK8sApiNetworkingV1beta1IngressList
+                field: listNetworkingV1NamespacedIngress
               to:
                 type: Query
                 field: Ingresses
             - from: 
                 type: Query
-                field: ioK8sApiAppsV1ReplicaSet
-              to:
-                type: Query
-                field: ReplicaSet
-            - from: 
-                type: Query
-                field: ioK8sApiAppsV1ReplicaSetList
-              to:
-                type: Query
-                field: ReplicaSets
-            - from: 
-                type: Query
-                field: ioK8sApiAppsV1Deployment
-              to:
-                type: Query
-                field: Deployment
-            - from: 
-                type: Query
-                field: ioK8sApiAppsV1DeploymentList
-              to:
-                type: Query
-                field: Deployments
-            - from: 
-                type: Query
-                field: ioK8sApiAppsV1DaemonSet
-              to:
-                type: Query
-                field: DaemonSet
-            - from: 
-                type: Query
-                field: ioK8sApiAppsV1DaemonSetList
-              to:
-                type: Query
-                field: DaemonSets
-            - from: 
-                type: Query
-                field: ioK8sApiAppsV1StatefulSet
-              to:
-                type: Query
-                field: StatefulSet
-            - from: 
-                type: Query
-                field: ioK8sApiAppsV1StatefulSetList
-              to:
-                type: Query
-                field: StatefulSets
-            - from: 
-                type: Query
-                field: ioK8sApiCoreV1ReplicationController
-              to:
-                type: Query
-                field: ReplicationController
-            - from: 
-                type: Query
-                field: ioK8sApiCoreV1ReplicationControllerList
-              to:
-                type: Query
-                field: ReplicationControllers
-            - from: 
-                type: Query
-                field: ioK8sApiAutoscalingV1HorizontalPodAutoscaler
-              to:
-                type: Query
-                field: HorizontalPodAutoscaler
-            - from: 
-                type: Query
-                field: ioK8sApiAutoscalingV1HorizontalPodAutoscalerList
-              to:
-                type: Query
-                field: HorizontalPodAutoscalers
-            - from: 
-                type: Query
-                field: ioK8sApiBatchV1beta1CronJob
-              to:
-                type: Query
-                field: CronJob
-            - from: 
-                type: Query
-                field: ioK8sApiBatchV1beta1CronJobList
-              to:
-                type: Query
-                field: CronJobs
-            - from: 
-                type: Query
-                field: ioK8sApiBatchV1Job
-              to:
-                type: Query
-                field: Job
-            - from: 
-                type: Query
-                field: ioK8sApiBatchV1JobList
-              to:
-                type: Query
-                field: Jobs
-            - from: 
-                type: Query
-                field: ioK8sApiRbacV1RoleBinding
-              to:
-                type: Query
-                field: RoleBinding
-            - from: 
-                type: Query
-                field: ioK8sApiRbacV1RoleBindingList
-              to:
-                type: Query
-                field: RoleBindings
-            - from: 
-                type: Query
-                field: ioK8sApiRbacV1Role
-              to:
-                type: Query
-                field: Role
-            - from: 
-                type: Query
-                field: ioK8sApiRbacV1RoleList
-              to:
-                type: Query
-                field: Roles
-            - from: 
-                type: Query
-                field: ioK8sApiCoreV1ServiceAccount
-              to:
-                type: Query
-                field: ServiceAccount
-            - from: 
-                type: Query
-                field: ioK8sApiCoreV1ServiceAccountList
-              to:
-                type: Query
-                field: ServiceAccounts
-            - from: 
-                type: Query
-                field: ioK8sApiCoreV1ResourceQuota
-              to:
-                type: Query
-                field: ResourceQuota
-            - from: 
-                type: Query
-                field: ioK8sApiCoreV1ResourceQuotaList
-              to:
-                type: Query
-                field: ResourceQuotas
-            - from: 
-                type: Query
-                field: ioK8sApiCoreV1Endpoints
-              to:
-                type: Query
-                field: Endpoints
-            - from: 
-                type: Query
-                field: ioK8sApiCoreV1EndpointsList
-              to:
-                type: Query
-                field: EndpointsList
-            - from: 
-                type: Query
-                field: ioK8sApiAppsV1ControllerRevision
-              to:
-                type: Query
-                field: ControllerRevision
-            - from: 
-                type: Query
-                field: ioK8sApiAppsV1ControllerRevisionList
-              to:
-                type: Query
-                field: ControllerRevisions
-            - from: 
-                type: Query
-                field: ioK8sApiNetworkingV1NetworkPolicy
+                field: readNetworkingV1NamespacedNetworkPolicy
               to:
                 type: Query
                 field: NetworkPolicy
             - from: 
                 type: Query
-                field: ioK8sApiNetworkingV1NetworkPolicyList
+                field: listNetworkingV1NamespacedNetworkPolicy
+              to:
+                type: Query
+                field: NetworkPolicies
+            - from: 
+                type: Query
+                field: readNetworkingV1IngressClass
+              to:
+                type: Query
+                field: IngressClass
+            - from: 
+                type: Query
+                field: listNetworkingV1IngressClass
+              to:
+                type: Query
+                field: IngressClasses
+            - from: 
+                type: Query
+                field: readAppsV1NamespacedReplicaSet
+              to:
+                type: Query
+                field: ReplicaSet
+            - from: 
+                type: Query
+                field: listAppsV1NamespacedReplicaSet
+              to:
+                type: Query
+                field: ReplicaSets
+            - from: 
+                type: Query
+                field: readAppsV1NamespacedDeployment
+              to:
+                type: Query
+                field: Deployment
+            - from: 
+                type: Query
+                field: listAppsV1NamespacedDeployment
+              to:
+                type: Query
+                field: Deployments
+            - from: 
+                type: Query
+                field: readAppsV1NamespacedDaemonSet
+              to:
+                type: Query
+                field: DaemonSet
+            - from: 
+                type: Query
+                field: listAppsV1NamespacedDaemonSet
+              to:
+                type: Query
+                field: DaemonSets
+            - from: 
+                type: Query
+                field: readAppsV1NamespacedStatefulSet
+              to:
+                type: Query
+                field: StatefulSet
+            - from: 
+                type: Query
+                field: listAppsV1NamespacedStatefulSet
+              to:
+                type: Query
+                field: StatefulSets
+            - from: 
+                type: Query
+                field: readCoreV1NamespacedReplicationController
+              to:
+                type: Query
+                field: ReplicationController
+            - from: 
+                type: Query
+                field: listCoreV1NamespacedReplicationController
+              to:
+                type: Query
+                field: ReplicationControllers
+            - from: 
+                type: Query
+                field: readAutoscalingV1HorizontalPodAutoscaler
+              to:
+                type: Query
+                field: HorizontalPodAutoscaler
+            - from: 
+                type: Query
+                field: listAutoscalingV1HorizontalPodAutoscaler
+              to:
+                type: Query
+                field: HorizontalPodAutoscalers
+            - from: 
+                type: Query
+                field: readBatchV1beta1NamespacedCronJob
+              to:
+                type: Query
+                field: CronJob
+            - from: 
+                type: Query
+                field: listBatchV1beta1NamespacedCronJob
+              to:
+                type: Query
+                field: CronJobs
+            - from: 
+                type: Query
+                field: readBatchV1NamespacedJob
+              to:
+                type: Query
+                field: Job
+            - from: 
+                type: Query
+                field: listBatchV1NamespacedJob
+              to:
+                type: Query
+                field: Jobs
+            - from: 
+                type: Query
+                field: readRbacAuthorizationV1RoleBinding
+              to:
+                type: Query
+                field: RoleBinding
+            - from: 
+                type: Query
+                field: listRbacAuthorizationV1RoleBinding
+              to:
+                type: Query
+                field: RoleBindings
+            - from: 
+                type: Query
+                field: readRbacV1Role
+              to:
+                type: Query
+                field: Role
+            - from: 
+                type: Query
+                field: listRbacV1Role
+              to:
+                type: Query
+                field: Roles
+            - from: 
+                type: Query
+                field: readCoreV1NamespacedServiceAccount
+              to:
+                type: Query
+                field: ServiceAccount
+            - from: 
+                type: Query
+                field: listCoreV1NamespacedServiceAccount
+              to:
+                type: Query
+                field: ServiceAccounts
+            - from: 
+                type: Query
+                field: readCoreV1NamespacedurceQuota
+              to:
+                type: Query
+                field: ResourceQuota
+            - from: 
+                type: Query
+                field: listCoreV1NamespacedResourceQuota
+              to:
+                type: Query
+                field: ResourceQuotas
+            - from: 
+                type: Query
+                field: readCoreV1NamespacedEndpoints
+              to:
+                type: Query
+                field: Endpoints
+            - from: 
+                type: Query
+                field: listCoreV1NamespacedEndpoints
+              to:
+                type: Query
+                field: EndpointsList
+            - from: 
+                type: Query
+                field: readAppsV1ControllerRevision
+              to:
+                type: Query
+                field: ControllerRevision
+            - from: 
+                type: Query
+                field: listAppsV1ControllerRevision
+              to:
+                type: Query
+                field: ControllerRevisions
+            - from: 
+                type: Query
+                field: readNetworkingV1NetworkPolicy
+              to:
+                type: Query
+                field: NetworkPolicy
+            - from: 
+                type: Query
+                field: listNetworkingV1NetworkPolicy
               to:
                 type: Query
                 field: NetworkPolicys
             - from: 
                 type: Query
-                field: ioK8sApiPolicyV1beta1PodDisruptionBudget
+                field: readPolicyV1beta1PodDisruptionBudget
               to:
                 type: Query
                 field: PodDisruptionBudget
             - from: 
                 type: Query
-                field: ioK8sApiPolicyV1beta1PodDisruptionBudgetList
+                field: listPolicyV1beta1PodDisruptionBudget
               to:
                 type: Query
                 field: PodDisruptionBudgets
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1LimitRange
+                field: readCoreV1NamespacedRange
               to:
                 type: Query
                 field: LimitRange
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1LimitRangeList
+                field: listCoreV1NamespacedLimitRange
               to:
                 type: Query
                 field: LimitRanges
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1PodTemplate
+                field: readCoreV1NamespacedPodTemplate
               to:
                 type: Query
                 field: PodTemplate
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1PodTemplateList
+                field: listCoreV1NamespacedPodTemplate
               to:
                 type: Query
                 field: PodTemplates
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1Event
+                field: readCoreV1NamespacedEvent
               to:
                 type: Query
                 field: Event
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1EventList
+                field: listCoreV1NamespacedEvent
               to:
                 type: Query
                 field: Events
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1PersistentVolumeClaim
+                field: readCoreV1NamespacedPersistentVolumeClaim
               to:
                 type: Query
                 field: PersistentVolumeClaim
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1PersistentVolumeClaimList
+                field: listCoreV1NamespacedPersistentVolumeClaim
               to:
                 type: Query
                 field: PersistentVolumeClaims
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1PersistentVolume
+                field: readCoreV1PersistentVolume
               to:
                 type: Query
                 field: PersistentVolume
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1PersistentVolumeList
+                field: listCoreV1PersistentVolume
               to:
                 type: Query
                 field: PersistentVolumes
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1Secret
+                field: readCoreV1NamespacedSecret
               to:
                 type: Query
                 field: Secret
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1SecretList
+                field: listCoreV1NamespacedSecret
               to:
                 type: Query
                 field: Secrets
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1ConfigMap
+                field: readCoreV1NamespacedConfigMap
               to:
                 type: Query
                 field: ConfigMap
             - from: 
                 type: Query
-                field: ioK8sApiCoreV1ConfigMapList
+                field: listCoreV1NamespacedConfigMap
               to:
                 type: Query
                 field: ConfigMaps
+            - from: 
+                type: Query
+                field: readNodeV1RuntimeClass
+              to:
+                type: Query
+                field: RuntimeClass
+            - from: 
+                type: Query
+                field: listNodeV1RuntimeClass
+              to:
+                type: Query
+                field: RuntimeClasses
 
     additionalTypeDefs: |
         interface K8sResourceInterface {
@@ -616,9 +654,6 @@ data:
       hostname: 0.0.0.0
       port: 4000
 
-    # serve:
-    #   hostname: 0.0.0.0
-    #   port: 3999
   example-query.graphql: |-
     query q {
       Pods(namespace: "default") {
@@ -690,13 +725,6 @@ data:
       }
     }
 
-  # .meshrc2.yaml: |-
-  #   sources:
-  #   - name: graphqlMeshK8s
-  #     handler:
-  #       graphql:
-  #         endpoint: http://mesh-svc:3999/graphql
-  #   additionalTypeDefs: |
   additional-resolvers.js: |-
     const { print } = require('graphql');
     //const graphqlFields = require("graphql-fields");
@@ -946,29 +974,29 @@ data:
         parent: createParentResolver("Pod"),
         connected: createConnectedResolver("Pod", "Services"),
         namespace: createNamespaceResolver("Namespace"),
-        events: createEventResolver("Pod", "listCoreV1NamespacedEvent"),
+        events: createEventResolver("Pod", "Events"),
         mounting: createMountingResolver("Pod")
       },
       ReplicaSet: {
         parent: createParentResolver("ReplicaSet"),
         children: createChildrenResolver("Pods"),
         namespace: createNamespaceResolver("Namespace"),
-        events: createEventResolver("ReplicaSet", "listCoreV1NamespacedEvent")
+        events: createEventResolver("ReplicaSet", "Events")
       },
       Deployment: {
         children: createChildrenResolver("ReplicaSets"),
         namespace: createNamespaceResolver("Namespace"),
-        events: createEventResolver("Deployment", "listCoreV1NamespacedEvent")
+        events: createEventResolver("Deployment", "Events")
       },
       DaemonSet: {
         children: createChildrenResolver("Pods"),
         namespace: createNamespaceResolver("Namespace"),
-        events: createEventResolver("DaemonSet", "listCoreV1NamespacedEvent")
+        events: createEventResolver("DaemonSet", "Events")
       },
       StatefulSet: {
         children: createChildrenResolver("Pods"),
         namespace: createNamespaceResolver("Namespace"),
-        events: createEventResolver("StatefulSet", "listCoreV1NamespacedEvent")
+        events: createEventResolver("StatefulSet", "Events")
       },
       K8sPodParent: {
         __resolveType(obj, context, info){
