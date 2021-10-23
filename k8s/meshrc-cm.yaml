@@ -557,7 +557,239 @@ data:
               to:
                 type: Query
                 field: ConfigMaps
-
+        # - rename:
+        #     mode: wrap
+        #     renames:
+        #     - from: 
+        #         type: Query
+        #         field: ioK8sApiCoreV1EndpointsList
+        #       to:
+        #         type: Query
+        #         field: EndpointsList
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiCoreV1(.*)List
+        #       to:
+        #         type: Query
+        #         field: $1s
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiCoreV1(.*)
+        #       to:
+        #         type: Query
+        #         field: $1
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiRbacV1(.*)List
+        #       to:
+        #         type: Query
+        #         field: $1s
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiRbacV1(.*)
+        #       to:
+        #         type: Query
+        #         field: $1
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiStorageV1(.*)List
+        #       to:
+        #         type: Query
+        #         field: $1s
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiStorageV1(.*)
+        #       to:
+        #         type: Query
+        #         field: $1
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiAdmissionregistrationV1(.*)List
+        #       to:
+        #         type: Query
+        #         field: $1s
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiAdmissionregistrationV1(.*)
+        #       to:
+        #         type: Query
+        #         field: $1
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiCertificatesV1beta1(.*)List
+        #       to:
+        #         type: Query
+        #         field: $1s
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiCertificatesV1beta1(.*)
+        #       to:
+        #         type: Query
+        #         field: $1
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiPolicyV1beta1(.*)List
+        #       to:
+        #         type: Query
+        #         field: $1s
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiPolicyV1beta1(.*)
+        #       to:
+        #         type: Query
+        #         field: $1
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiextensionsApiserverPkgApisApiextensionsV1(.*)List
+        #       to:
+        #         type: Query
+        #         field: $1s
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiextensionsApiserverPkgApisApiextensionsV1(.*)
+        #       to:
+        #         type: Query
+        #         field: $1
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiSchedulingV1(.*)List
+        #       to:
+        #         type: Query
+        #         field: $1s
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiSchedulingV1(.*)
+        #       to:
+        #         type: Query
+        #         field: $1
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiNetworkingV1(.*)List
+        #       to:
+        #         type: Query
+        #         field: $1s
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiNetworkingV1(.*)
+        #       to:
+        #         type: Query
+        #         field: $1
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiAppsV1(.*)List
+        #       to:
+        #         type: Query
+        #         field: $1s
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiAppsV1(.*)
+        #       to:
+        #         type: Query
+        #         field: $1
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiAutoscalingV1(.*)List
+        #       to:
+        #         type: Query
+        #         field: $1s
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiAutoscalingV1(.*)
+        #       to:
+        #         type: Query
+        #         field: $1
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiBatchV1(.*)List
+        #       to:
+        #         type: Query
+        #         field: $1s
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiBatchV1(.*)
+        #       to:
+        #         type: Query
+        #         field: $1
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiDiscoveryV1(.*)List
+        #       to:
+        #         type: Query
+        #         field: $1s
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiDiscoveryV1(.*)
+        #       to:
+        #         type: Query
+        #         field: $1
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiNodeV1(.*)List
+        #       to:
+        #         type: Query
+        #         field: $1s
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiNodeV1(.*)
+        #       to:
+        #         type: Query
+        #         field: $1
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiFlowcontrolV1(.*)List
+        #       to:
+        #         type: Query
+        #         field: $1s
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiFlowcontrolV1(.*)
+        #       to:
+        #         type: Query
+        #         field: $1
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiCoordinationV1(.*)List
+        #       to:
+        #         type: Query
+        #         field: $1s
+        #       useRegExpForFields: true
+        #     - from:
+        #         type: Query
+        #         field: ioK8sApiCoordinationV1(.*)
+        #       to:
+        #         type: Query
+        #         field: $1
+        #       useRegExpForFields: true
     additionalTypeDefs: |
         interface K8sResourceInterface {
           kind: String
